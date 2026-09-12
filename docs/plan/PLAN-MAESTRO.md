@@ -1,5 +1,7 @@
 # NERV: gerencia estratégica conectada al trabajo real
 
+> **Alcance histórico, sustituido para esta entrega.** El [MVP vigente de 110 minutos](../mvp/README.md) y sus [contratos](../mvp/CONTRATOS.md) prevalecen sobre funcionalidades, arquitectura, reparto y tiempos de este plan. No sumar sus requisitos al MVP reducido.
+
 **Versión:** propuesta ejecutable con recursos del evento. **Equipo:** tres personas y sus agentes de programación. **Tiempo:** 300 minutos obligatorios; hasta 60 adicionales si el plazo oficial lo permite. Consultar [RECURSOS-Y-ARRANQUE.md](RECURSOS-Y-ARRANQUE.md) para herramientas, enlaces y primeras instrucciones de cada miembro.
 
 ## 1. Definición del proyecto

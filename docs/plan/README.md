@@ -1,5 +1,7 @@
 # NERV: paquete de definición y ejecución
 
+> **Paquete histórico de 300 minutos.** Para el desarrollo actual usar [MVP de 110 minutos](../mvp/README.md), [CONTRATOS](../mvp/CONTRATOS.md) y los prompts P1/P2/P3 enlazados allí. El alcance, stack y arranque de este documento están sustituidos; permanecen como referencia de la visión ampliada.
+
 Este paquete define el producto y el trabajo para **tres personas con agentes de programación**, en una hackathon de **5 horas efectivas y una sexta hora opcional**. El entorno confirmado por el equipo es **GitHub más un panel web de gerencia**. Es un plan para ejecutar; no representa una aplicación ya construida.
 
 El remoto de trabajo configurado es [OscarSantiagoMerino/NERV](https://github.com/OscarSantiagoMerino/NERV). Compartir ese repositorio como base; comprobar acceso y visibilidad con el equipo al iniciar, sin crear otro repositorio de código por defecto.

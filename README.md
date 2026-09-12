@@ -1,5 +1,7 @@
 # NERV — PMO Agéntica embebida en GitHub
 
+> **MVP vigente:** comenzar por [docs/mvp/README.md](docs/mvp/README.md), sus [contratos mínimos](docs/mvp/CONTRATOS.md) y los tres prompts enlazados allí. Ese paquete define la demo interactiva de 110 minutos y sustituye el alcance técnico descrito abajo. El contenido siguiente conserva la propuesta inicial; no acredita funcionalidades ya construidas.
+
 **NERV** es un agente de dirección y gerencia estratégica de proyectos analíticos que vive **dentro de GitHub**. No es un chatbot al que le preguntas por tu proyecto: es una PMO (Project Management Office) agéntica que se instala en un repositorio y ejecuta el ciclo completo de gerencia (establecer, asignar roles, monitorear y controlar), materializando todo como objetos reales de GitHub — milestones, issues, labels, asignaciones y reportes de control.
 
 ## Qué hace

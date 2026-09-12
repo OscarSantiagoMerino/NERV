@@ -1,5 +1,7 @@
 # NERV: recursos del evento e instrucciones de arranque
 
+> **Arranque histórico.** Para la ventana reducida usar [MVP de 110 minutos](../mvp/README.md), que determina herramientas y reparto vigentes. Este inventario conserva enlaces y posibilidades futuras; no activa integraciones fuera de ese MVP.
+
 Este documento concreta cómo usar el paquete de recursos aportado por el equipo para construir **una plataforma interactiva compartida**. Complementa el plan y los tres prompts; no instala servicios ni presupone créditos activados. Documentación consultada el 12 de septiembre de 2026.
 
 ## 1. Decisión de implementación
@@ -26,7 +28,7 @@ Cada persona recibe su prompt completo y los contratos. Un agente escritor por c
 |---|---|
 | **Starter Kit** | Obligatorio como punto de partida. P2 integra la base; P1 adapta `apps/web`; P3 adapta el runtime. No iniciar otro framework en paralelo. |
 | **OpenAI / Agents SDK** | Núcleo, P3. Tres definiciones `Agent`, herramientas `tool` y ejecución `run`, con salida validada. Un modelo disponible en la cuenta, fijado en H0. [Quickstart TypeScript](https://openai.github.io/openai-agents-js/guides/quickstart/) |
-| **OpenAI / Voice agents** | Extensión después del recorrido textual: P1 entrada de voz y P3 sesión/herramientas. Hablar con un agente no implementa reuniones por videollamada. [Guía de voz](https://developers.openai.com/api/docs/guides/voice-agents) |
+| **OpenAI / Voice agents** | Fase posterior al hackathon: P1 entrada de voz y P3 sesión/herramientas. Hablar con un agente no implementa reuniones por videollamada. [Guía de voz](https://developers.openai.com/api/docs/guides/voice-agents) |
 | **CopilotKit / Quickstart** | Núcleo, P1 interfaz y P3 runtime. Contexto seleccionado, navegación por herramientas y renderizado de resultados en componentes interactivos. [Quickstart](https://docs.copilotkit.ai/quickstart) |
 | **CopilotKit / Channels** | Fase posterior: acceso a NERV desde Slack/Teams. P3 conector y P1 experiencia. No se necesita para el chat entre miembros dentro de NERV. [Channels](https://docs.copilotkit.ai/reference/channels) |
 | **Auth0 / User authentication** | Núcleo, P2. Universal Login y sesiones reales para tres personas. El ejemplo M2M del kit autentica un servicio; no reemplaza el login humano. [Next.js quickstart](https://auth0.com/docs/quickstart/webapp/nextjs) |
