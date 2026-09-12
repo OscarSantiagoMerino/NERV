@@ -1,0 +1,17 @@
+:root {
+  color-scheme: light dark;
+  --nerv-bg: #0b0f14;
+  --nerv-fg: #e6edf3;
+  --nerv-accent: #4f8cff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  background: var(--nerv-bg);
+  color: var(--nerv-fg);
+}
