@@ -127,15 +127,20 @@ export async function createIssue(
  * that the acceptance criteria actually checks. Silent no-op (returns null)
  * if AMBIGUOUS_API_KEY isn't configured — that's a valid, non-error state.
  *
- * Untested against a live workspace (no AMBIGUOUS_API_KEY in this
- * environment) — the tool-discovery heuristics in ambiguousMcp.ts may need
- * adjusting once a real workspace's tool names/schemas are seen.
+ * Verified 2026-09-12 against the live NERV Ambiguous workspace — `create_task`
+ * is the right tool, but its response has no `url` field (see ambiguousMcp.ts's
+ * extractRecordRef comment); `result.url` is therefore null on this workspace,
+ * never fabricated. `result.taskKey` (e.g. "TASK-001") is the human-readable
+ * reference to show instead of a link.
  */
 export async function createAmbiguousRecord(
   title: string,
   body: string,
 ): Promise<
-  { result: { recordId: string; url: string } | null; error: { code: string; message: string } | null }
+  {
+    result: { recordId: string; taskKey: string | null; url: string | null } | null;
+    error: { code: string; message: string } | null;
+  }
 > {
   const apiKey = ambiguousApiKey();
   if (!apiKey) return { result: null, error: null };
@@ -167,7 +172,7 @@ export async function createAmbiguousRecord(
           result: null,
           error: {
             code: "ambiguous_unrecognized_response",
-            message: `Tool "${createTool.name}" succeeded but no recordId/url could be parsed from its response.`,
+            message: `Tool "${createTool.name}" succeeded but no recordId could be parsed from its response.`,
           },
         };
       }
@@ -185,11 +190,11 @@ export async function createAmbiguousRecord(
  * docs/mvp/CONTRATOS.md §11 (Ambiguous read addendum, proposed 2026-09-12,
  * pending team confirmation like §10 was before Oscar/Daniel signed off).
  *
- * Untested against a live workspace (no AMBIGUOUS_API_KEY in this
- * environment) — the tool-discovery heuristics in ambiguousMcp.ts may need
- * adjusting once a real workspace's tool names/schemas are seen. Per
- * using-sponsor-tools.md, Ambiguous's tool names/arguments are discovered
- * live from the connected workspace, never hardcoded here.
+ * Verified 2026-09-12 against the live NERV Ambiguous workspace (856 discovered
+ * tools) — `list_tasks` is the right tool. Per using-sponsor-tools.md,
+ * Ambiguous's tool names/arguments are discovered live from the connected
+ * workspace, never hardcoded here; the selection heuristic in ambiguousMcp.ts
+ * is tuned against this workspace's actual naming, not guessed.
  */
 export async function listAmbiguousRecords(): Promise<{
   records: AmbiguousRecordSummary[];

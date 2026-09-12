@@ -109,8 +109,12 @@ export const ProposalSchema = z.object({
   approvedByDemoProfileId: z.string().nullable(),
   result: z.object({ number: z.number().int().positive(), url: z.string() }).nullable(),
   // Adenda 2026-09-12 (docs/mvp/CONTRATOS.md §10): Ambiguous export, parallel
-  // to `result`. Pending team confirmation — see the addendum for why.
-  ambiguous: z.object({ recordId: z.string(), url: z.string() }).nullable().default(null),
+  // to `result`. `url` is nullable — verified live against the NERV workspace,
+  // Ambiguous's task tools return no url/link field at all, only id/task_key.
+  ambiguous: z
+    .object({ recordId: z.string(), taskKey: z.string().nullable(), url: z.string().nullable() })
+    .nullable()
+    .default(null),
   ambiguousError: z.object({ code: z.string(), message: z.string() }).nullable().default(null),
   error: z.object({ code: z.string(), message: z.string() }).nullable(),
 });
@@ -159,7 +163,8 @@ export type ProposalOutcome =
       newTask: Task;
       // Adenda Ambiguous (docs/mvp/CONTRATOS.md §10): optional, never blocks
       // or reverts the GitHub result. Omit both if Ambiguous isn't configured.
-      ambiguous?: { recordId: string; url: string } | null;
+      // url is nullable — Ambiguous's task tools don't return one (verified live).
+      ambiguous?: { recordId: string; taskKey: string | null; url: string | null } | null;
       ambiguousError?: { code: string; message: string } | null;
     }
   | { status: "failed" | "uncertain"; error: { code: string; message: string } };

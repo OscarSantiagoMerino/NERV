@@ -273,9 +273,13 @@ function AppliedCard({
         <section className="nerv-review-block">
           <h4>Also recorded in Ambiguous</h4>
           <p>
-            <a href={proposal.ambiguous.url} target="_blank" rel="noreferrer">
-              {proposal.ambiguous.url}
-            </a>
+            {proposal.ambiguous.url !== null ? (
+              <a href={proposal.ambiguous.url} target="_blank" rel="noreferrer">
+                {proposal.ambiguous.url}
+              </a>
+            ) : (
+              <span>{proposal.ambiguous.taskKey ?? proposal.ambiguous.recordId}</span>
+            )}
           </p>
         </section>
       ) : null}
