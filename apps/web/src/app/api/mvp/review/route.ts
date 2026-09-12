@@ -1,24 +1,22 @@
-import { NextResponse } from "next/server";
+import type { Proposal } from "@/contracts/mvp";
 import { buildAndSaveSnapshot } from "@/server/github/mvp/sync";
-import { reviewRisk, toReview, proposalMarker } from "@/server/ai/mvp/specialist";
-import { getDemoContext, getProject, listTasks, saveReviewAndProposal } from "@/server/ai/mvp/tempStore";
-import { errorResponse } from "@/server/ai/mvp/httpErrors";
-import type { Proposal } from "@/server/ai/mvp/types";
+import { proposalMarker, reviewRisk, toReview } from "@/server/ai/mvp/specialist";
+import { getDemoContext, getState, saveReviewAndProposal } from "@/server/platform/mvp";
+import { jsonData, withApiErrors } from "@/server/platform/mvp/http";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 /** POST /api/mvp/review — CONTRATOS.md §3/§5, owner P3. Body: {}. */
 export async function POST(request: Request) {
-  try {
-    const context = getDemoContext(request);
+  return withApiErrors(async () => {
+    const context = getDemoContext(request, { requireOrigin: true });
 
     // "refresca GitHub para crear Snapshot live antes de revisar" — §5.
     const snapshot = await buildAndSaveSnapshot(context.repo);
-    const project = getProject();
-    const tasks = listTasks();
+    const state = getState();
 
-    const result = await reviewRisk(project, tasks);
+    const result = await reviewRisk(state.project, state.tasks);
     const reviewId = `review_${Date.now()}`;
     const { review, proposalPayload } = toReview(reviewId, snapshot.id, result);
 
@@ -41,14 +39,14 @@ export async function POST(request: Request) {
         approvedAt: null,
         approvedByDemoProfileId: null,
         result: null,
+        ambiguous: null,
+        ambiguousError: null,
         error: null,
       };
       review.proposalId = proposal.id;
     }
 
     saveReviewAndProposal(review, proposal);
-    return NextResponse.json({ data: review });
-  } catch (error) {
-    return errorResponse(error);
-  }
+    return jsonData(review);
+  });
 }

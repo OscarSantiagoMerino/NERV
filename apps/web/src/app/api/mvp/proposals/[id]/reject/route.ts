@@ -1,6 +1,5 @@
-import { NextResponse } from "next/server";
-import { getDemoContext, rejectProposal } from "@/server/ai/mvp/tempStore";
-import { errorResponse } from "@/server/ai/mvp/httpErrors";
+import { getDemoContext, rejectProposal } from "@/server/platform/mvp";
+import { jsonData, jsonError, withApiErrors } from "@/server/platform/mvp/http";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -13,23 +12,15 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   try {
     body = await request.json();
   } catch {
-    return NextResponse.json(
-      { error: { code: "invalid_body", message: "Expected JSON body", retryable: false } },
-      { status: 400 },
-    );
+    return jsonError(400, "INVALID_BODY", "Expected JSON body");
   }
   if (typeof body.expectedVersion !== "number") {
-    return NextResponse.json(
-      { error: { code: "invalid_body", message: "expectedVersion is required", retryable: false } },
-      { status: 400 },
-    );
+    return jsonError(400, "INVALID_BODY", "expectedVersion is required");
   }
 
-  try {
-    const context = getDemoContext(request);
-    const updated = rejectProposal(id, body.expectedVersion, context);
-    return NextResponse.json({ data: updated });
-  } catch (error) {
-    return errorResponse(error);
-  }
+  return withApiErrors(async () => {
+    const context = getDemoContext(request, { requireOrigin: true });
+    const updated = rejectProposal(id, body.expectedVersion!, context);
+    return jsonData(updated);
+  });
 }

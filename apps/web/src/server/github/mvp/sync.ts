@@ -1,31 +1,7 @@
-import type { GitHubRef, Snapshot, Task } from "@/server/ai/mvp/types";
-import {
-  findIssueByMarker,
-  GithubClientError,
-  listIssues,
-  type RawGithubIssue,
-} from "./client";
-import {
-  finishProposal,
-  listProposalsByStatus,
-  listTasks,
-  saveSnapshot,
-  type DemoContextError,
-} from "@/server/ai/mvp/tempStore";
+import type { GitHubRef, Snapshot } from "@/contracts/mvp";
+import { getState, saveSnapshot, finishProposal } from "@/server/platform/mvp";
+import { findIssueByMarker, GithubClientError, listIssues, type RawGithubIssue } from "./client";
 import { proposalMarker } from "@/server/ai/mvp/specialist";
-
-/**
- * Six issue numbers the demo project was seeded with. TEMPORARY: replace
- * with P2's real sixTasksSeed once published — this env var is a stand-in.
- */
-function seededIssueNumbers(): number[] {
-  const raw = process.env.GITHUB_DEMO_ISSUE_NUMBERS?.trim();
-  if (!raw) return [];
-  return raw
-    .split(",")
-    .map((value) => Number(value.trim()))
-    .filter((value) => Number.isInteger(value) && value > 0);
-}
 
 function toGithubRef(repo: string, issue: RawGithubIssue): GitHubRef {
   return {
@@ -38,91 +14,84 @@ function toGithubRef(repo: string, issue: RawGithubIssue): GitHubRef {
   };
 }
 
-function toTask(repo: string, issue: RawGithubIssue, existing: Task | undefined): Task {
-  return {
-    id: existing?.id ?? `task_${repo}_${issue.number}`,
-    title: issue.title,
-    body: issue.body ?? "",
-    milestoneId: existing?.milestoneId ?? "milestone_ready",
-    ownerProfileId: existing?.ownerProfileId ?? null,
-    workflowState: existing?.workflowState ?? "todo",
-    github: toGithubRef(repo, issue),
-    version: (existing?.version ?? 0) + 1,
-    updatedAt: new Date().toISOString(),
-  };
-}
-
-/** POST /api/mvp/github/sync body — CONTRATOS.md §3/§5. */
+/**
+ * Matches seeded tasks to live GitHub issues by exact title — the "stable
+ * identity" CONTRATOS.md §1 asks for, since the fixture's placeholder issue
+ * numbers (9001-9006) won't exist in the real repo. P3 (human) creates the
+ * six real issues with matching titles in the authorized repo.
+ */
 export async function buildAndSaveSnapshot(repo: string): Promise<Snapshot> {
-  const expectedNumbers = seededIssueNumbers();
+  const seedTasks = getState().tasks;
   const limitations: string[] = [];
   let complete = true;
-  let matched: RawGithubIssue[] = [];
+  let liveIssues: RawGithubIssue[] = [];
 
-  if (expectedNumbers.length === 0) {
-    limitations.push("No seeded issue numbers configured (GITHUB_DEMO_ISSUE_NUMBERS).");
+  try {
+    liveIssues = (await listIssues(repo)).filter((issue) => !issue.isPullRequest);
+  } catch (error) {
     complete = false;
-  } else {
-    try {
-      const all = await listIssues(repo);
-      const byNumber = new Map(all.map((issue) => [issue.number, issue]));
-      matched = expectedNumbers
-        .map((number) => byNumber.get(number))
-        .filter((issue): issue is RawGithubIssue => !!issue && !issue.isPullRequest);
-
-      if (matched.length < expectedNumbers.length) {
-        complete = false;
-        limitations.push(
-          `Expected ${expectedNumbers.length} seeded issues, found ${matched.length}.`,
-        );
-      }
-    } catch (error) {
-      complete = false;
-      limitations.push(
-        error instanceof GithubClientError
-          ? `GitHub read failed (${error.status}): ${error.message}`
-          : `GitHub read failed: ${String(error)}`,
-      );
-    }
+    limitations.push(
+      error instanceof GithubClientError
+        ? `GitHub read failed (${error.status}): ${error.message}`
+        : `GitHub read failed: ${String(error)}`,
+    );
   }
 
-  const existingTasks = new Map(listTasks().map((task) => [task.github.number, task]));
-  const tasks = matched.map((issue) => toTask(repo, issue, existingTasks.get(issue.number)));
+  const normalizedTasks: Array<{ taskId: string; github: GitHubRef }> = [];
+  const matchedRefs: GitHubRef[] = [];
+
+  for (const task of seedTasks) {
+    const match = liveIssues.find((issue) => issue.title === task.title);
+    if (!match) {
+      complete = false;
+      limitations.push(`No live issue titled "${task.title}" found in ${repo}.`);
+      continue;
+    }
+    const ref = toGithubRef(repo, match);
+    normalizedTasks.push({ taskId: task.id, github: ref });
+    matchedRefs.push(ref);
+  }
 
   const snapshot: Snapshot = {
     id: `snapshot_${Date.now()}`,
     fetchedAt: new Date().toISOString(),
     mode: "live",
     complete,
-    issues: matched.map((issue) => toGithubRef(repo, issue)),
+    issues: matchedRefs,
     limitations,
   };
 
-  saveSnapshot(snapshot, tasks);
-
+  saveSnapshot(snapshot, normalizedTasks);
   await reconcilePendingProposals(repo);
-
   return snapshot;
 }
 
 /**
  * CONTRATOS.md §5: sync also reconciles executing/uncertain proposals by
  * searching for their marker in the repo, in case a prior write actually
- * succeeded but the response was never confirmed (timeout, crash).
- * Not finding it in a partial list is not proof it doesn't exist, so
- * unmatched proposals are simply left as-is for the next sync attempt.
+ * succeeded but the response was never confirmed (timeout, crash). Not
+ * finding it in a partial list is not proof it doesn't exist, so unmatched
+ * proposals are simply left as-is for the next sync attempt.
  */
 async function reconcilePendingProposals(repo: string): Promise<void> {
-  const pending = listProposalsByStatus("executing", "uncertain");
+  const pending = getState().proposals.filter((p) => p.status === "executing" || p.status === "uncertain");
   for (const proposal of pending) {
     const found = await findIssueByMarker(repo, proposalMarker(proposal.id));
     if (!found) continue;
     finishProposal(proposal.id, {
       status: "applied",
       result: { number: found.number, url: found.htmlUrl },
-      newTask: toTask(repo, found, undefined),
+      newTask: {
+        id: `task_${repo}_${found.number}`,
+        title: found.title,
+        body: found.body ?? "",
+        milestoneId: "ms-ready-for-validation",
+        ownerProfileId: null,
+        workflowState: "todo",
+        github: toGithubRef(repo, found),
+        version: 1,
+        updatedAt: new Date().toISOString(),
+      },
     });
   }
 }
-
-export type { DemoContextError };

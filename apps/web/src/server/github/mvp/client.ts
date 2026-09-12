@@ -105,3 +105,26 @@ export async function createIssue(
   const raw = (await response.json()) as Parameters<typeof normalize>[0];
   return normalize(raw);
 }
+
+/**
+ * docs/mvp/CONTRATOS.md §10 (Ambiguous addendum, authorized 2026-09-12).
+ * Called only AFTER the GitHub issue is confirmed created, never before or
+ * in parallel — a failure here must never compete with or block the write
+ * that the acceptance criteria actually checks. Silent no-op (returns null)
+ * if AMBIGUOUS_API_KEY isn't configured — that's a valid, non-error state.
+ */
+export async function createAmbiguousRecord(
+  _title: string,
+  _body: string,
+): Promise<
+  { result: { recordId: string; url: string } | null; error: { code: string; message: string } | null }
+> {
+  // TODO(P3): the real MCP call (https://app.ambiguous.ai/mcp, Bearer
+  // AMBIGUOUS_API_KEY) needs @modelcontextprotocol/sdk, which isn't in
+  // this repo's package.json — that file is P2's exclusive territory
+  // (CONTRATOS.md §1). Request the dependency from P2, or hand-roll the
+  // JSON-RPC calls without the SDK, before wiring this in for real.
+  // Safe no-op in the meantime: identical to "AMBIGUOUS_API_KEY unset",
+  // which the addendum defines as a valid, non-error state.
+  return { result: null, error: null };
+}

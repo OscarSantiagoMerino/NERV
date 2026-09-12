@@ -1,6 +1,6 @@
 import { Agent, run, tool } from "@openai/agents";
 import { z } from "zod";
-import type { Project, Review, Task } from "./types";
+import type { Project, Review, Task } from "@/contracts/mvp";
 
 export function proposalMarker(proposalId: string): string {
   return `<!-- nerv-proposal:${proposalId} -->`;

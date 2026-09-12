@@ -1,16 +1,13 @@
-import { NextResponse } from "next/server";
-import { createIssue, getIssue, GithubClientError } from "@/server/github/mvp/client";
+import { createAmbiguousRecord, createIssue, getIssue, GithubClientError } from "@/server/github/mvp/client";
 import {
   claimProposal,
-  DemoContextError,
+  DemoError,
   finishProposal,
   getDemoContext,
-  getProposal,
-  getReview,
-  getTask,
   getSnapshot,
-} from "@/server/ai/mvp/tempStore";
-import { errorResponse } from "@/server/ai/mvp/httpErrors";
+  getState,
+} from "@/server/platform/mvp";
+import { jsonData, jsonError, withApiErrors } from "@/server/platform/mvp/http";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -27,61 +24,68 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   try {
     body = await request.json();
   } catch {
-    return NextResponse.json(
-      { error: { code: "invalid_body", message: "Expected JSON body", retryable: false } },
-      { status: 400 },
-    );
+    return jsonError(400, "INVALID_BODY", "Expected JSON body");
   }
   if (typeof body.expectedVersion !== "number") {
-    return NextResponse.json(
-      { error: { code: "invalid_body", message: "expectedVersion is required", retryable: false } },
-      { status: 400 },
-    );
+    return jsonError(400, "INVALID_BODY", "expectedVersion is required");
   }
 
-  try {
-    const context = getDemoContext(request);
+  return withApiErrors(async () => {
+    const context = getDemoContext(request, { requireOrigin: true });
+    const state = getState();
 
-    // Staleness check against the original snapshot's cited evidence,
-    // per CONTRATOS.md §5 step 1 — conservative repo/number/updatedAt only.
-    const proposalBefore = getReviewSnapshotOrThrow(id);
-    for (const taskId of proposalBefore.review.evidenceTaskIds) {
-      const task = getTask(taskId);
-      if (!task) continue; // nothing cited yet, or task no longer tracked
+    const proposal = state.proposals.find((p) => p.id === id);
+    if (!proposal) throw new DemoError(404, "NOT_FOUND", `Proposal ${id} not found`);
+    const review = state.reviews.find((r) => r.id === proposal.reviewId);
+    if (!review) throw new DemoError(404, "NOT_FOUND", `Review ${proposal.reviewId} not found`);
+
+    // Staleness check against the original snapshot's cited evidence —
+    // CONTRATOS.md §5 step 1, conservative repo/number/updatedAt only.
+    const snapshot = getSnapshot(review.snapshotId);
+    if (!snapshot || snapshot.mode !== "live") {
+      throw new DemoError(409, "STALE_SNAPSHOT", "Original snapshot is missing or not live — request a new review.", true);
+    }
+    for (const taskId of review.evidenceTaskIds) {
+      const task = state.tasks.find((t) => t.id === taskId);
+      if (!task) continue;
       const fresh = await getIssue(context.repo, task.github.number).catch(() => null);
       if (!fresh || fresh.updatedAt !== task.github.updatedAt) {
-        return NextResponse.json(
-          {
-            error: {
-              code: "evidence_changed",
-              message: `Issue #${task.github.number} changed since the review — request a new review.`,
-              retryable: false,
-            },
-          },
-          { status: 409 },
+        throw new DemoError(
+          409,
+          "EVIDENCE_CHANGED",
+          `Issue #${task.github.number} changed since the review — request a new review.`,
+          true,
         );
       }
     }
 
-    const { claimed, proposal } = claimProposal(id, body.expectedVersion, context);
+    const { claimed, proposal: claimedProposal } = claimProposal(id, body.expectedVersion!, context);
     if (!claimed) {
       // Already executing/applied/rejected/etc. — return current state, no re-publish.
-      return NextResponse.json({ data: proposal });
+      return jsonData(claimedProposal);
     }
 
     try {
       const issue = await createIssue(context.repo, {
-        title: proposal.payload.title,
-        body: proposal.payload.body,
+        title: claimedProposal.payload.title,
+        body: claimedProposal.payload.body,
       });
+
+      // Ambiguous step (CONTRATOS.md §10, authorized) — strictly AFTER the
+      // GitHub write, never blocking/competing with it. Its own failure
+      // never changes the proposal's applied status.
+      const ambiguousOutcome = await createAmbiguousRecord(claimedProposal.payload.title, claimedProposal.payload.body);
+
       const updated = finishProposal(id, {
         status: "applied",
         result: { number: issue.number, url: issue.htmlUrl },
+        ambiguous: ambiguousOutcome.result,
+        ambiguousError: ambiguousOutcome.error,
         newTask: {
           id: `task_${context.repo}_${issue.number}`,
           title: issue.title,
           body: issue.body ?? "",
-          milestoneId: "milestone_ready",
+          milestoneId: state.project.milestone.id,
           ownerProfileId: null,
           workflowState: "todo",
           github: {
@@ -96,7 +100,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
           updatedAt: new Date().toISOString(),
         },
       });
-      return NextResponse.json({ data: updated });
+      return jsonData(updated);
     } catch (writeError) {
       // A definite HTTP rejection (GithubClientError) means it was NOT
       // created — anything else (network/timeout) is genuinely uncertain.
@@ -108,31 +112,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
           message: writeError instanceof Error ? writeError.message : String(writeError),
         },
       });
-      return NextResponse.json({ data: updated });
+      return jsonData(updated);
     }
-  } catch (error) {
-    return errorResponse(error);
-  }
-}
-
-function getReviewSnapshotOrThrow(proposalId: string) {
-  const proposal = mustGetProposal(proposalId);
-  const review = mustGetReview(proposal.reviewId);
-  const snapshot = getSnapshot(review.snapshotId);
-  if (!snapshot || snapshot.mode !== "live") {
-    throw new DemoContextError("stale_snapshot", "Original snapshot is missing or not live — request a new review.");
-  }
-  return { proposal, review };
-}
-
-function mustGetProposal(id: string) {
-  const proposal = getProposal(id);
-  if (!proposal) throw new DemoContextError("not_found", `Proposal ${id} not found`);
-  return proposal;
-}
-
-function mustGetReview(id: string) {
-  const review = getReview(id);
-  if (!review) throw new DemoContextError("not_found", `Review ${id} not found`);
-  return review;
+  });
 }
