@@ -128,3 +128,36 @@ export async function createAmbiguousRecord(
   // which the addendum defines as a valid, non-error state.
   return { result: null, error: null };
 }
+
+export interface AmbiguousRecordSummary {
+  recordId: string;
+  title: string;
+  status: string;
+  url: string;
+}
+
+/**
+ * docs/mvp/CONTRATOS.md §11 (Ambiguous read addendum, proposed 2026-09-12,
+ * pending team confirmation like §10 was before Oscar/Daniel signed off).
+ *
+ * Same blocker as createAmbiguousRecord above, plus one more: per
+ * using-sponsor-tools.md, Ambiguous's MCP tool names/arguments are
+ * discovered live from the connected workspace, not fixed — there is no
+ * documented stable REST endpoint (e.g. no GET /tasks in the public
+ * openapi.json) to fall back on the way the GitHub client does. A real
+ * implementation must open the MCP connection, list tools, and select the
+ * read/list tool by description at runtime — never hardcode a tool name.
+ * Safe no-op until @modelcontextprotocol/sdk is approved by P2 and there's
+ * a live AMBIGUOUS_API_KEY to verify tool discovery against.
+ */
+export async function listAmbiguousRecords(): Promise<{
+  records: AmbiguousRecordSummary[];
+  complete: boolean;
+  limitations: string[];
+}> {
+  return {
+    records: [],
+    complete: false,
+    limitations: ["AMBIGUOUS_API_KEY not wired: MCP read tool not yet implemented (needs @modelcontextprotocol/sdk)."],
+  };
+}

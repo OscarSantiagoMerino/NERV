@@ -180,3 +180,22 @@ Antes de comenzar, las personas asignan nombres a P1/P2/P3, confirman la máquin
 - Si la llamada a Ambiguous falla pero GitHub tuvo éxito, el resultado sigue siendo `applied` (GitHub es la acción que cuenta para el criterio de aceptación); el fallo de Ambiguous se guarda aparte y se muestra, sin bloquear ni revertir la issue ya creada.
 
 **Si el equipo decide NO adoptar esto:** revertir el campo `ambiguous` es no ejecutar ese paso opcional; no afecta el resto del contrato. Avisar en el commit correspondiente.
+
+## 12. Adenda: lectura de Ambiguous como evidencia del especialista
+
+**Añadido 2026-09-12 por alejandrobaracaldo, con su agente. Pendiente de confirmación de Oscar y Daniel — no asumir aceptado hasta que respondan.** Amplía la §11/§10 anterior (que solo cubría escritura); no la reemplaza.
+
+**Qué cambia:** el especialista de riesgos (README §1 paso 5) puede llamar a una herramienta `read_ambiguous`, además de `read_project`/`read_github`, para citar registros existentes del workspace de Ambiguous como evidencia adicional al diagnosticar un bloqueo. No persiste nada nuevo: es una lectura en el momento de la revisión, igual que `read_github` lee del estado ya sincronizado. No cambia Kanban/Charter/chat ni el contrato de `Snapshot`/`Proposal`.
+
+**Por qué:** el equipo ya tiene un flujo de escritura hacia Ambiguous (§11); leer de ahí también aprovecha esa misma integración para enriquecer el diagnóstico, no solo para reportar la acción aprobada.
+
+**Bloqueo actual (mismo que §11 ya tenía para escritura):** `using-sponsor-tools.md` del starter kit confirma que los nombres/argumentos de herramientas de Ambiguous se descubren en vivo desde el workspace conectado — no hay un endpoint REST estable documentado (el `openapi.json` público no incluye tareas/registros). Implementarlo de verdad requiere `@modelcontextprotocol/sdk` (no está en `package.json`; P2 debe aprobarlo) y una `AMBIGUOUS_API_KEY` real para verificar el descubrimiento de herramientas. Mientras tanto, `read_ambiguous` es una herramienta real conectada al especialista, respaldada por un stub honesto (`listAmbiguousRecords`) que devuelve una lista vacía con la limitación explicada — nunca datos inventados.
+
+**Contrato (detalle en [CONTRATOS.md §11](CONTRATOS.md#11-adenda-lectura-de-ambiguous))**
+
+- Nueva herramienta del especialista: `read_ambiguous`, sin persistencia, opcional en la secuencia de revisión.
+- Ningún campo nuevo en `Proposal`/`Snapshot`/`Task`; esta adenda no toca `docs/mvp/CONTRATOS.md §2`.
+- Dueño de la implementación: **P3** (mismo archivo que el especialista y el cliente de Ambiguous/GitHub).
+- Un resultado vacío o limitado de `read_ambiguous` no es en sí mismo un hallazgo de riesgo; el especialista no debe inventar un bloqueo por falta de datos de Ambiguous.
+
+**Si el equipo decide NO adoptar esto:** quitar `read_ambiguous` de la lista de herramientas del especialista es no ejecutar este paso opcional; no afecta `read_project`/`read_github`/`propose_mitigation` ni el resto del contrato. Avisar en el commit correspondiente.

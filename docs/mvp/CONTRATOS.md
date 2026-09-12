@@ -171,3 +171,23 @@ type ProposalOutcome =
 **Config:** nueva variable `AMBIGUOUS_API_KEY` en `.env.example`, junto a `GITHUB_TOKEN`. Ausente ⇒ el paso de Ambiguous se omite silenciosamente (no es un error de la propuesta); la tarjeta simplemente no muestra un enlace de Ambiguous.
 
 **Propiedad:** P3 implementa la llamada MCP (mismo archivo que el adaptador de GitHub); P2 solo amplía el esquema/tabla `proposals` para persistir los campos nuevos. Ningún archivo cambia de dueño.
+
+## 11. Adenda: lectura de Ambiguous
+
+**Añadido 2026-09-12 por alejandrobaracaldo. Pendiente de confirmación de Oscar y Daniel — ver [README.md §12](README.md#12-adenda-lectura-de-ambiguous-como-evidencia-del-especialista) para el porqué.**
+
+No extiende ningún tipo de §2. El especialista (§5) gana una herramienta adicional, sin efecto en persistencia:
+
+```ts
+read_ambiguous(): Promise<{
+  records: Array<{ recordId: string; title: string; status: string; url: string }>;
+  complete: boolean;
+  limitations: string[];
+}>
+```
+
+`read_ambiguous` es opcional en la secuencia de revisión (`read_project`/`read_github` siguen siendo obligatorios primero). Un resultado con `records: []` y una limitación explicada (p. ej. credencial no configurada, herramienta MCP aún no implementada) es válido y no debe tratarse como hallazgo de riesgo. El especialista solo puede citar `recordId`s que `read_ambiguous` realmente devolvió — igual regla que ya aplica a `read_github` y evidenceTaskIds.
+
+**Ejecución (P3):** respaldada por `listAmbiguousRecords()` en el mismo archivo que `createAmbiguousRecord` (adenda §10). Bloqueo idéntico: requiere `@modelcontextprotocol/sdk` (P2 aprueba la dependencia) y una `AMBIGUOUS_API_KEY` real para verificar el descubrimiento de herramientas en vivo — los nombres de herramienta de Ambiguous no están fijados, se listan desde el workspace conectado. Hasta entonces, `listAmbiguousRecords()` es un stub honesto: devuelve lista vacía y limitación explicada, nunca datos inventados.
+
+**Propiedad:** P3, mismo archivo que el adaptador de GitHub/Ambiguous y el especialista. Ningún archivo cambia de dueño; no se toca el esquema de P2.
