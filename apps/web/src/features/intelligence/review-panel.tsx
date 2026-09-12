@@ -2,6 +2,7 @@
 
 import type { Proposal, Review, Snapshot, Task } from "@/contracts/mvp";
 import type { WorkspaceControls } from "@/features/workspace/use-workspace";
+import { NERV_AGENTS } from "./agent-catalog";
 import type { IntelligenceControls } from "./use-intelligence";
 
 const clock = new Intl.DateTimeFormat("en", { timeStyle: "short" });
@@ -439,16 +440,14 @@ export function ReviewPanel({
   workspace: WorkspaceControls;
 }) {
   const { review, proposal } = intelligence;
+  const riskSpecialist = NERV_AGENTS.riskSpecialist;
 
   const body = (() => {
     if (review === null) {
       return (
         <div className="nerv-assist-cta">
-          <h3>Risk specialist</h3>
-          <p>
-            Reads the charter and the latest GitHub snapshot, then explains what threatens the
-            goal. It proposes; it never publishes.
-          </p>
+          <h3>{riskSpecialist.name}</h3>
+          <p>{riskSpecialist.description}</p>
           <div>
             <button
               type="button"
@@ -456,7 +455,7 @@ export function ReviewPanel({
               disabled={intelligence.busy !== null}
               onClick={() => void intelligence.runReview()}
             >
-              {intelligence.busy === "review" ? "Reviewing…" : "Review risks"}
+              {intelligence.busy === "review" ? "Reviewing…" : riskSpecialist.actionLabel}
             </button>
           </div>
         </div>

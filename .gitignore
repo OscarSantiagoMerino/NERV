@@ -1,10 +1,21 @@
 node_modules/
-.next/
 .env
 .env.local
+*.log
+dist/
+.DS_Store
+.turbo/
+*.tsbuildinfo
+.next/
+next-env.d.ts
+assets/fonts/
+apps/mobile/.expo/
+
+# Web approval metadata, the room's JSON store and the fixture repository
+.data/
 apps/web/.data/
+
+# The mvp stack's SQLite database
 apps/web/data/*.sqlite
 apps/web/data/*.sqlite-wal
 apps/web/data/*.sqlite-shm
-*.log
-*.tsbuildinfo

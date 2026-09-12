@@ -32,6 +32,38 @@ Frontend — Next.js + CopilotKit
   dashboard (KPIs, burndown, tabla RACI) + copiloto conversacional
 ```
 
+## La sala del proyecto (implementada)
+
+`apps/web` sirve una sala en `http://127.0.0.1:3100/room` con tres paneles —
+Board, Charter & plan y Team chat — y un asistente a la derecha. Lo que
+distingue a NERV de un tablero más está en ese asistente:
+
+1. **Sync** lee el repositorio configurado y pega esa lectura al tablero.
+   Mover una tarjeta a Done nunca cierra la issue, y una lectura parcial
+   nunca borra tareas: el estado de NERV y el `open/closed` de GitHub son
+   hechos distintos.
+2. **Review risks** ejecuta al especialista de riesgo sobre el charter y el
+   snapshot recién leído. Devuelve qué amenaza el criterio de éxito, la
+   evidencia citada con su número de issue, y separa lo observado de lo
+   inferido y de lo que no pudo establecer. Si no hay modelo configurado
+   cae a una lectura por reglas, y la tarjeta dice cuál de las dos produjo
+   el resultado.
+3. **La propuesta es inmutable.** El texto que el lead lee es byte por byte
+   el que se publica; para cambiarlo se rechaza y se revisa otra vez. Solo
+   el lead puede aprobar, y aprobar es lo único que escribe en GitHub.
+4. **Nunca dos issues.** Antes de publicar se reclama la propuesta con una
+   condición de versión, así que doble clic, dos pestañas o un reintento
+   producen una sola escritura. Si la respuesta se pierde, el resultado
+   queda *incierto* y se reconcilia buscando el marcador
+   `<!-- nerv-proposal:UUID -->`, nunca creando la issue de nuevo.
+
+Sin `GITHUB_TOKEN` todo el recorrido funciona contra un repositorio fixture
+local, y cada superficie lo etiqueta como tal.
+
+```bash
+npm ci && npm run dev:web    # http://127.0.0.1:3100
+```
+
 ## Estado del proyecto
 
 Este repositorio está en fase de definición y planeación. El detalle completo (marco teórico, contratos entre componentes, plan de trabajo por hitos, prompts de arranque por rol) está en [`NERV_DEFINICION_Y_PLAN.md`](./NERV_DEFINICION_Y_PLAN.md).

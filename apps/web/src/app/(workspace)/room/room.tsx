@@ -1,11 +1,14 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { CopilotChat } from "@copilotkit/react-core/v2";
+import { NERV_AGENTS } from "@/features/intelligence/agent-catalog";
 import { ReviewPanel } from "@/features/intelligence/review-panel";
 import { useIntelligence } from "@/features/intelligence/use-intelligence";
 import { Board } from "@/features/workspace/board";
 import { Overview } from "@/features/workspace/overview";
 import { TeamChat } from "@/features/workspace/team-chat";
+import { WorkspaceControl } from "@/features/workspace/workspace-control";
 import { useWorkspace, type WorkspaceView } from "@/features/workspace/use-workspace";
 import type { DemoProfile, DemoState } from "@/contracts/mvp";
 
@@ -118,6 +121,7 @@ export function Room() {
 
 function RoomView({ initial }: { initial: DemoState }) {
   const workspace = useWorkspace(initial);
+  const projectAssistant = NERV_AGENTS.projectAssistant;
   const intelligence = useIntelligence(
     { snapshot: initial.snapshot, reviews: initial.reviews, proposals: initial.proposals },
     () => workspace.viewer?.id ?? initial.profiles[0].id,
@@ -126,6 +130,7 @@ function RoomView({ initial }: { initial: DemoState }) {
 
   return (
     <>
+      <WorkspaceControl workspace={workspace} />
       <main className="ck-workspace nerv-room">
         <header className="ck-workspace-header">
           <div>
@@ -186,10 +191,17 @@ function RoomView({ initial }: { initial: DemoState }) {
 
           <section className="ck-panel ck-assistant" aria-labelledby="assistant-title">
             <header className="ck-assistant-header">
-              <h2 id="assistant-title">Project assistant</h2>
-              <p>Reads GitHub as evidence and proposes; it never publishes on its own.</p>
+              <h2 id="assistant-title">{projectAssistant.name}</h2>
+              <p>{projectAssistant.description}</p>
             </header>
             <ReviewPanel intelligence={intelligence} workspace={workspace} />
+            <CopilotChat
+              className="ck-chat"
+              labels={{
+                welcomeMessageText: "What needs attention in this project?",
+                chatInputPlaceholder: "Ask about the plan, the board, or a blocker…",
+              }}
+            />
           </section>
         </div>
       </main>

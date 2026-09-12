@@ -1,15 +1,30 @@
 import type { Metadata } from "next";
+import { Providers } from "@/components/providers";
+import "@copilotkit/react-core/v2/styles.css";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "NERV",
-  description: "Espacio de trabajo compartido para planear, conversar, ejecutar y dirigir proyectos.",
+  title: "NERV — project room",
+  description:
+    "Plan, talk, execute and steer one project in a shared room connected to real work.",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <html lang="es">
-      <body>{children}</body>
+    <html lang="en">
+      <head>
+        <link
+          href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Spline+Sans+Mono:wght@400;500;600&display=swap"
+          rel="stylesheet"
+        />
+      </head>
+      <body>
+        <Providers>{children}</Providers>
+      </body>
     </html>
   );
 }
