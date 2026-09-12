@@ -34,12 +34,34 @@ export function configuredSpecialistRuntime(): SpecialistRuntime | null {
     };
   }
 
+  if (selectedProvider === "google" || selectedProvider === "gemini") {
+    const apiKey = process.env.GOOGLE_API_KEY?.trim();
+    if (!apiKey || apiKey === "stub-replace-me") return null;
+
+    const model = (process.env.MODEL || "gemini-3.6-flash").trim().replace(/^(google|gemini)[/:]/i, "");
+    if (!model) return null;
+
+    return {
+      model,
+      runner: new Runner({
+        // Gemini's OpenAI-compatibility endpoint: same OpenAIProvider shape
+        // already used for ollama/openai above, just pointed at Google.
+        modelProvider: new OpenAIProvider({
+          apiKey,
+          baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/",
+          useResponses: false,
+        }),
+        tracingDisabled: true,
+      }),
+    };
+  }
+
   if (selectedProvider !== "openai") return null;
   const apiKey = process.env.OPENAI_API_KEY?.trim();
   if (!apiKey || apiKey === "stub-replace-me") return null;
 
   const model = (process.env.MODEL || "gpt-4o-mini").trim().replace(/^openai[/:]/i, "");
-  if (!model || /^(openrouter|anthropic|google|ollama)[/:]/i.test(model)) return null;
+  if (!model || /^(openrouter|anthropic|google|gemini|ollama)[/:]/i.test(model)) return null;
 
   return {
     model,

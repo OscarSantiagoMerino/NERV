@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { CopilotChat } from "@copilotkit/react-core/v2";
+import { Providers } from "@/components/providers";
 import { NERV_AGENTS } from "@/features/intelligence/agent-catalog";
 import { ReviewPanel } from "@/features/intelligence/review-panel";
 import { useIntelligence } from "@/features/intelligence/use-intelligence";
@@ -116,7 +117,17 @@ export function Room() {
     );
   }
 
-  return <RoomView initial={boot.state} />;
+  // Mounted here, not in root layout.tsx: CopilotKitProvider's first request
+  // (GET /api/copilotkit/info) fires as soon as it mounts. Every route except
+  // /api/mvp/session requires a known X-Nerv-Profile header (CONTRATOS.md
+  // §3); mounting at the root meant that handshake fired before a profile
+  // was chosen, got 401, and the chat never recovered. sessionStorage
+  // already has PROFILE_STORAGE_KEY set by the time we reach "ready".
+  return (
+    <Providers>
+      <RoomView initial={boot.state} />
+    </Providers>
+  );
 }
 
 function RoomView({ initial }: { initial: DemoState }) {

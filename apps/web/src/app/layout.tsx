@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Providers } from "@/components/providers";
 import "@copilotkit/react-core/v2/styles.css";
 import "./globals.css";
 
@@ -22,9 +21,7 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body>
-        <Providers>{children}</Providers>
-      </body>
+      <body>{children}</body>
     </html>
   );
 }
