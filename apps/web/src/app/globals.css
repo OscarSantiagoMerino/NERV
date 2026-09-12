@@ -830,3 +830,210 @@ p {
   border: 1px solid var(--border);
   border-radius: 6px;
 }
+
+/* ── Assistant panel: the review side ─────────────────────────────────
+ * The panel is a fixed-height column shared with the chat. The review
+ * stack takes what it needs up to a share of the height and scrolls
+ * inside itself, so a long finding never pushes the chat input off the
+ * panel — the two have to stay usable at the same time.
+ */
+.nerv-review-panel {
+  flex: 0 1 auto;
+  min-height: 0;
+  max-height: 62%;
+  overflow-y: auto;
+  padding: 20px 28px;
+  border-bottom: 1px solid var(--border);
+}
+.ck-assistant .ck-chat {
+  min-height: 180px;
+}
+
+.nerv-assist-cta {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #f7f7f9;
+}
+.nerv-assist-cta h3 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+.nerv-assist-cta p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.nerv-review-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+.nerv-review-head h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+.nerv-review-head p {
+  margin: 4px 0 0;
+  font-size: 12px;
+}
+
+.nerv-review-block {
+  margin-bottom: 16px;
+}
+.nerv-review-block h4 {
+  margin: 0 0 6px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+  font-weight: 600;
+}
+.nerv-review-block p {
+  margin: 0;
+  font-size: 13px;
+}
+
+/* The one sentence a lead reads first: what the goal stands to lose. */
+.nerv-goal {
+  border-left: 3px solid var(--accent);
+  padding: 8px 12px;
+  background: #f7f7f9;
+  border-radius: 0 6px 6px 0;
+}
+
+.nerv-evidence,
+.nerv-limits,
+.nerv-steps {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 13px;
+}
+.nerv-steps {
+  list-style: decimal;
+  padding-left: 18px;
+}
+.nerv-steps li,
+.nerv-limits li {
+  margin-bottom: 6px;
+}
+.nerv-evidence li {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 10px;
+  margin-bottom: 8px;
+}
+.nerv-evidence-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.nerv-evidence p {
+  margin: 4px 0 0;
+  font-size: 12px;
+}
+
+/* Observed / Inferred / Limit, so a reader can tell a fact from a guess
+ * without parsing the sentence. */
+.nerv-kind {
+  display: inline-block;
+  min-width: 68px;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.nerv-badge--link {
+  font-family: "Spline Sans Mono", ui-monospace, monospace;
+}
+
+.nerv-issue {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.nerv-issue-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  background: #f7f7f9;
+  font-size: 13px;
+}
+.nerv-issue-body {
+  margin: 0;
+  padding: 12px;
+  font-family: "Spline Sans Mono", ui-monospace, monospace;
+  font-size: 12px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-x: auto;
+}
+
+.nerv-lock {
+  font-size: 12px;
+  color: var(--muted);
+  border: 1px dashed var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin: 0 0 16px;
+}
+
+.nerv-applied {
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  padding: 12px;
+  margin-bottom: 16px;
+}
+.nerv-applied strong {
+  display: block;
+  font-size: 14px;
+}
+.nerv-applied p {
+  margin: 6px 0 0;
+  font-size: 12px;
+}
+
+.nerv-marker {
+  font-family: "Spline Sans Mono", ui-monospace, monospace;
+  font-size: 12px;
+  word-break: break-all;
+  background: #f7f7f9;
+  border-radius: 6px;
+  padding: 8px 10px;
+}
+
+.nerv-review-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+.nerv-note {
+  font-size: 12px;
+}
+
+.nerv-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}

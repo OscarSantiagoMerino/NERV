@@ -1,6 +1,8 @@
 "use client";
 
 import { CopilotChat } from "@copilotkit/react-core/v2";
+import { ReviewPanel } from "@/features/intelligence/review-panel";
+import { useIntelligence } from "@/features/intelligence/use-intelligence";
 import { Board } from "@/features/workspace/board";
 import { Overview } from "@/features/workspace/overview";
 import { TeamChat } from "@/features/workspace/team-chat";
@@ -16,6 +18,10 @@ const NAV: { view: WorkspaceView; label: string }[] = [
 
 export function Room({ store, viewer }: { store: Store; viewer: Member }) {
   const workspace = useWorkspace(store, viewer);
+  const intelligence = useIntelligence(
+    { snapshot: store.snapshot, reviews: store.reviews, proposals: store.proposals },
+    workspace.refresh,
+  );
 
   return (
     <>
@@ -74,7 +80,9 @@ export function Room({ store, viewer }: { store: Store; viewer: Member }) {
 
         <div className="ck-workspace-grid nerv-grid">
           {workspace.view === "overview" ? <Overview workspace={workspace} /> : null}
-          {workspace.view === "board" ? <Board workspace={workspace} /> : null}
+          {workspace.view === "board" ? (
+            <Board workspace={workspace} intelligence={intelligence} />
+          ) : null}
           {workspace.view === "team" ? <TeamChat workspace={workspace} /> : null}
 
           <section className="ck-panel ck-assistant" aria-labelledby="assistant-title">
@@ -82,6 +90,7 @@ export function Room({ store, viewer }: { store: Store; viewer: Member }) {
               <h2 id="assistant-title">Project assistant</h2>
               <p>It reads this room and can open panels. It never saves on its own.</p>
             </header>
+            <ReviewPanel intelligence={intelligence} workspace={workspace} />
             <CopilotChat
               className="ck-chat"
               labels={{

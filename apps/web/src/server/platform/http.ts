@@ -16,7 +16,7 @@ export function jsonError(status: number, code: string, message: string, retryab
 export function withApiErrors(handler: () => Promise<NextResponse>): Promise<NextResponse> {
   return handler().catch((err) => {
     if (err instanceof AccessError) {
-      return jsonError(err.status, err.code, err.message);
+      return jsonError(err.status, err.code, err.message, err.retryable);
     }
     console.error(err);
     return jsonError(500, "INTERNAL", "Unexpected server error.", true);

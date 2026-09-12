@@ -110,6 +110,9 @@ export const seedStore: Store = {
       blocked: false,
       githubIssueNumber: null,
       githubUrl: null,
+      githubState: null,
+      githubLabels: [],
+      githubUpdatedAt: null,
       version: 1,
     },
     {
@@ -127,6 +130,9 @@ export const seedStore: Store = {
       blocked: false,
       githubIssueNumber: null,
       githubUrl: null,
+      githubState: null,
+      githubLabels: [],
+      githubUpdatedAt: null,
       version: 1,
     },
     {
@@ -144,6 +150,9 @@ export const seedStore: Store = {
       blocked: false,
       githubIssueNumber: null,
       githubUrl: null,
+      githubState: null,
+      githubLabels: [],
+      githubUpdatedAt: null,
       version: 1,
     },
     {
@@ -161,6 +170,9 @@ export const seedStore: Store = {
       blocked: true,
       githubIssueNumber: null,
       githubUrl: null,
+      githubState: null,
+      githubLabels: [],
+      githubUpdatedAt: null,
       version: 1,
     },
     {
@@ -178,6 +190,9 @@ export const seedStore: Store = {
       blocked: false,
       githubIssueNumber: null,
       githubUrl: null,
+      githubState: null,
+      githubLabels: [],
+      githubUpdatedAt: null,
       version: 1,
     },
     {
@@ -195,9 +210,16 @@ export const seedStore: Store = {
       blocked: false,
       githubIssueNumber: null,
       githubUrl: null,
+      githubState: null,
+      githubLabels: [],
+      githubUpdatedAt: null,
       version: 1,
     },
   ],
+  snapshot: null,
+  snapshots: [],
+  reviews: [],
+  proposals: [],
   messages: [
     {
       id: "msg-1",

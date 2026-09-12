@@ -38,6 +38,8 @@ export class AccessError extends Error {
     public status: number,
     public code: string,
     message: string,
+    /** Informative only: it never authorises a blind retry of a write. */
+    public retryable = false,
   ) {
     super(message);
   }

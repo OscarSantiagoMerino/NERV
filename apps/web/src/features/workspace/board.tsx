@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import type { IntelligenceControls } from "@/features/intelligence/use-intelligence";
 import type { WorkspaceControls } from "./use-workspace";
 import { WORKFLOW_STATES } from "./constants";
 import type { Task } from "@/contracts/schemas";
@@ -53,7 +54,9 @@ function TaskCard({
           {milestone === undefined ? "Unplanned" : milestone.title}
         </span>
         {task.githubIssueNumber === null ? null : (
-          <span className="nerv-badge">GitHub #{task.githubIssueNumber}</span>
+          <span className="nerv-badge nerv-badge--link">
+            #{task.githubIssueNumber} {task.githubState ?? "unread"}
+          </span>
         )}
       </div>
 
@@ -77,6 +80,13 @@ function TaskCard({
               ? task.acceptanceCriteria
               : "None recorded."}
           </p>
+          {task.githubUrl === null ? null : (
+            <p>
+              <a href={task.githubUrl} target="_blank" rel="noreferrer">
+                View issue #{task.githubIssueNumber} on GitHub
+              </a>
+            </p>
+          )}
           <label>
             Reassign
             <select
@@ -198,12 +208,41 @@ function NewTaskForm({ workspace }: { workspace: WorkspaceControls }) {
   );
 }
 
-export function Board({ workspace }: { workspace: WorkspaceControls }) {
+function SourceTag({ intelligence }: { intelligence: IntelligenceControls }) {
+  const { snapshot } = intelligence;
+  if (snapshot === null) return <span className="ck-tag">GitHub · not read yet</span>;
+  const read = new Date(snapshot.fetchedAt);
+  return (
+    <span className="ck-tag">
+      GitHub · {snapshot.mode} · read{" "}
+      {new Intl.DateTimeFormat("en", { timeStyle: "short" }).format(read)}
+    </span>
+  );
+}
+
+export function Board({
+  workspace,
+  intelligence,
+}: {
+  workspace: WorkspaceControls;
+  intelligence: IntelligenceControls;
+}) {
   return (
     <section className="ck-panel" aria-labelledby="board-title">
       <header className="nerv-section-header">
         <h2 id="board-title">Board</h2>
-        <NewTaskForm workspace={workspace} />
+        <div className="nerv-header-actions">
+          <SourceTag intelligence={intelligence} />
+          <button
+            type="button"
+            className="ck-btn"
+            disabled={intelligence.busy !== null}
+            onClick={() => void intelligence.sync()}
+          >
+            {intelligence.busy === "sync" ? "Syncing…" : "Sync"}
+          </button>
+          <NewTaskForm workspace={workspace} />
+        </div>
       </header>
 
       <div className="nerv-columns">
@@ -221,6 +260,11 @@ export function Board({ workspace }: { workspace: WorkspaceControls }) {
                   <TaskCard key={task.id} task={task} workspace={workspace} />
                 ))
               )}
+              {state === "done" ? (
+                <p className="ck-empty">
+                  Moving a card here does not close its GitHub issue.
+                </p>
+              ) : null}
             </div>
           );
         })}

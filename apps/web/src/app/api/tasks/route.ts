@@ -70,6 +70,9 @@ export async function POST(request: Request) {
         blocked: false,
         githubIssueNumber: null,
         githubUrl: null,
+        githubState: null,
+        githubLabels: [],
+        githubUpdatedAt: null,
         version: 1,
       };
       store.tasks.push(task);
