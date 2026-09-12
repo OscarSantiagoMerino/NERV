@@ -3,4 +3,7 @@ node_modules/
 .env
 .env.local
 apps/web/.data/
+apps/web/data/*.sqlite
+apps/web/data/*.sqlite-wal
+apps/web/data/*.sqlite-shm
 *.log

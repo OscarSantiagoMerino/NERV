@@ -37,7 +37,9 @@ Crear una issue no significa que el riesgo esté resuelto ni que se haya logrado
 | Resultado | URL real, estado de ejecución y tarjeta nueva en el mismo tablero | No se confunde éxito con un timeout o una respuesta simulada |
 | CopilotKit | Contexto de la sala y herramienta UI para enfocar una tarea | La interacción abre la tarjeta referenciada usando IDs reales |
 
-Se aplazan: edición/aprobación del Charter, editor RACI, reuniones, mapas, autenticación multiusuario, despliegue público, multiproyecto, asignación automática GitHub, sincronización bidireccional, drag-and-drop, varios especialistas, voz, Slack/Teams, traducciones, KPI históricos, EVM/SPI/CPI, Exa y Ambiguous.
+Se aplazan: edición/aprobación del Charter, editor RACI, reuniones, mapas, autenticación multiusuario, despliegue público, multiproyecto, asignación automática GitHub, sincronización bidireccional, drag-and-drop, varios especialistas, voz, Slack/Teams, traducciones, KPI históricos, EVM/SPI/CPI y Exa.
+
+> **Adenda 2026-09-12 (alejandrobaracaldo): Ambiguous AI vuelve a estar en alcance.** Ver [§11](#11-adenda-ambiguous-ai-en-alcance) al final de este documento antes de tratar "Se aplazan" como excluyente para Ambiguous. Esto cambia lo que P3 ejecuta al aprobar una propuesta; avisar al equipo antes de continuar con el ejecutor de GitHub.
 
 La interfaz usa inglés claro; el equipo puede presentar en español. Etiquetas como Project goal, Owner, Evidence y Approve resultan comprensibles internacionalmente. No se construye infraestructura i18n en esta ventana.
 
@@ -161,3 +163,20 @@ Reporta commit, qué funciona, prueba realizada, bloqueo y próxima integración
 ```
 
 Antes de comenzar, las personas asignan nombres a P1/P2/P3, confirman la máquina de demo, el plazo real, el repositorio permitido y las credenciales. Los agentes escriben y verifican; las personas aceptan alcance, acceso, gasto, acciones externas y entrega.
+
+## 11. Adenda: Ambiguous AI en alcance
+
+**Añadido 2026-09-12 por alejandrobaracaldo, con su agente. Pendiente de confirmación de Oscar y Daniel — no asumir aceptado hasta que respondan.** Esta sección amplía, no reemplaza, el §2/§3 anteriores; donde haya conflicto, esta adenda manda para Ambiguous específicamente.
+
+**Qué cambia:** al aprobar una propuesta y crear la issue real en GitHub (README §1 paso 7), el mismo ejecutor también crea un registro (tarea) equivalente en el workspace de Ambiguous del equipo, con el mismo título/cuerpo. La tarjeta de propuesta muestra ambos enlaces (GitHub e Ambiguous) tras `applied`. Rechazar sigue sin escribir en ninguno de los dos. Esto no cambia el recorrido de Kanban/Charter/chat/especialista; solo añade un segundo efecto al mismo paso de aprobación.
+
+**Por qué:** el `NVIDIA DGX Spark` de "Best Use of Ambiguous Workspace" es el premio individual más alto del evento; la integración verificada (CLI, ~4 segundos, sin navegador — ver `using-sponsor-tools.md#ambiguous-ai` del starter kit) es de bajo riesgo para el tiempo restante.
+
+**Contrato (detalle completo en [CONTRATOS.md §10](CONTRATOS.md#10-adenda-ambiguous-ai))**
+
+- Nuevo campo en `Proposal`: `ambiguous: {recordId: string; url: string} | null`, paralelo a `result`.
+- Nueva variable de entorno: `AMBIGUOUS_API_KEY`.
+- Dueño de la ejecución: **P3** (mismo paso que crea la issue de GitHub — es otro escritor externo bajo la misma aprobación humana). P2 solo extiende el esquema/persistencia para guardar el campo nuevo.
+- Si la llamada a Ambiguous falla pero GitHub tuvo éxito, el resultado sigue siendo `applied` (GitHub es la acción que cuenta para el criterio de aceptación); el fallo de Ambiguous se guarda aparte y se muestra, sin bloquear ni revertir la issue ya creada.
+
+**Si el equipo decide NO adoptar esto:** revertir el campo `ambiguous` es no ejecutar ese paso opcional; no afecta el resto del contrato. Avisar en el commit correspondiente.
