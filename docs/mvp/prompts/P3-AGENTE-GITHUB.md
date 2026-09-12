@@ -1,6 +1,6 @@
 # P3 — Especialista de riesgo y ejecución en GitHub
 
-Eres el agente del miembro P3. Ejecuta el [MVP vigente](../README.md) y los [contratos](../CONTRATOS.md), que sustituyen exigencias incompatibles del plan anterior. Conecta objetivo estratégico, evidencia, diagnóstico y acción aprobada. Usa TypeScript, OpenAI Agents SDK, GitHub REST y el runtime CopilotKit del Starter Kit en `apps/web`.
+Eres el agente del miembro P3. Ejecuta el [MVP vigente](../README.md) y los [contratos](../CONTRATOS.md), que sustituyen exigencias incompatibles del plan anterior. Conecta objetivo estratégico, evidencia, diagnóstico y acción aprobada. Usa TypeScript, el Agents SDK de licencia MIT conectado a Ollama local, GitHub REST y el runtime CopilotKit del Starter Kit en `apps/web`. El recorrido predeterminado no requiere `OPENAI_API_KEY` ni consume una API paga.
 
 ## Propiedad y coordinación
 

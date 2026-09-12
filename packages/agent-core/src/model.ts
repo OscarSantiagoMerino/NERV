@@ -14,7 +14,7 @@ export function resolveModel() {
   // A colon in a bare model name can introduce a variant, such as ':free'.
   // Only supported provider prefixes use colon syntax; publishers use '/'.
   const separator = firstSeparator >= 0 && (model[firstSeparator] === "/" ||
-    ["openai", "openrouter", "anthropic", "google"].includes(candidatePrefix || ""))
+    ["ollama", "openai", "openrouter", "anthropic", "google"].includes(candidatePrefix || ""))
     ? firstSeparator : -1;
   const prefix = separator >= 0 ? candidatePrefix : undefined;
   const modelId = separator >= 0 ? model.slice(separator + 1).trim() : model;
@@ -23,7 +23,26 @@ export function resolveModel() {
   }
   // Preserve the original automatic router switch for existing .env files.
   const provider = canonicalProvider(process.env.MODEL_PROVIDER || "") ||
-    (process.env.OPENROUTER_API_KEY ? "openrouter" : prefix || "openai");
+    (process.env.OPENROUTER_API_KEY ? "openrouter" : prefix || "ollama");
+
+  if (provider === "ollama") {
+    if (prefix && prefix !== provider) {
+      throw new Error(`MODEL provider '${prefix}' does not match MODEL_PROVIDER '${provider}'.`);
+    }
+    const configuredBaseURL = (process.env.OLLAMA_BASE_URL || "http://127.0.0.1:11434/v1")
+      .trim()
+      .replace(/\/+$/, "");
+    const baseURL = configuredBaseURL.endsWith("/v1")
+      ? configuredBaseURL
+      : `${configuredBaseURL}/v1`;
+    const ollama = createOpenAI({
+      baseURL,
+      // Ollama's OpenAI-compatible endpoint requires this field but ignores it.
+      apiKey: "ollama",
+    });
+    return ollama.chat(modelId);
+  }
+
   const keyNames: { [provider: string]: string | undefined } = {
     openai: "OPENAI_API_KEY",
     openrouter: "OPENROUTER_API_KEY",
@@ -32,7 +51,7 @@ export function resolveModel() {
   };
   const keyName = Object.hasOwn(keyNames, provider) ? keyNames[provider] : undefined;
   if (!keyName) {
-    throw new Error(`Unsupported model provider '${provider}'. Set MODEL_PROVIDER to openai, openrouter, anthropic, or google.`);
+    throw new Error(`Unsupported model provider '${provider}'. Set MODEL_PROVIDER to ollama, openai, openrouter, anthropic, or google.`);
   }
   if (provider !== "openrouter" && prefix && prefix !== provider) {
     throw new Error(`MODEL provider '${prefix}' does not match MODEL_PROVIDER '${provider}'.`);

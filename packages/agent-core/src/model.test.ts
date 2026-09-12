@@ -19,11 +19,26 @@ function withEnv(config: NodeJS.ProcessEnv, callback: () => void) {
     "OPENROUTER_API_KEY",
     "ANTHROPIC_API_KEY",
     "GOOGLE_API_KEY",
+    "OLLAMA_BASE_URL",
   ]) {
     delete process.env[key];
   }
   Object.assign(process.env, config);
   callback();
+}
+
+test("Ollama is the no-key default", () => {
+  withEnv({}, () => {
+    assert.deepEqual(resolvedChatModel(), { modelId: "qwen3:4b", provider: "openai.chat" });
+  });
+});
+
+for (const model of ["qwen3:4b", "ollama/qwen3:4b", "ollama:qwen3:4b"] as const) {
+  test(`Ollama accepts a local model without an API key: ${model}`, () => {
+    withEnv({ MODEL_PROVIDER: "ollama", MODEL: model }, () => {
+      assert.deepEqual(resolvedChatModel(), { modelId: "qwen3:4b", provider: "openai.chat" });
+    });
+  });
 }
 
 function resolvedChatModel() {

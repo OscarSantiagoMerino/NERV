@@ -1,7 +1,8 @@
-import { Agent, run, tool } from "@openai/agents";
+import { Agent, tool } from "@openai/agents";
 import { z } from "zod";
 import type { Project, Review, Task } from "@/contracts/mvp";
 import { listAmbiguousRecords } from "@/server/github/mvp/client";
+import { configuredSpecialistRuntime } from "@/server/ai/specialist-runtime";
 
 export function proposalMarker(proposalId: string): string {
   return `<!-- nerv-proposal:${proposalId} -->`;
@@ -15,7 +16,6 @@ const ProposeMitigationInput = z.object({
   mitigationBody: z.string(),
 });
 
-const MODEL = process.env.MODEL || "gpt-4o-mini";
 const MAX_TOOL_CALLS = 4; // read_project + read_github + read_ambiguous + propose_mitigation
 const TIME_BUDGET_MS = 35_000;
 
@@ -60,7 +60,8 @@ function fallback(project: Project, tasks: Task[]): SpecialistResult {
  * approves or writes to GitHub.
  */
 export async function reviewRisk(project: Project, tasks: Task[]): Promise<SpecialistResult> {
-  if (!process.env.OPENAI_API_KEY?.trim()) {
+  const runtime = configuredSpecialistRuntime();
+  if (runtime === null) {
     return fallback(project, tasks);
   }
 
@@ -128,7 +129,7 @@ export async function reviewRisk(project: Project, tasks: Task[]): Promise<Speci
 
   const agent = new Agent({
     name: "NERV Risk Specialist",
-    model: MODEL,
+    model: runtime.model,
     instructions:
       "You review a real project's Charter against its actual GitHub-tracked tasks. " +
       "Call read_project and read_github first (in either order); optionally call " +
@@ -145,7 +146,9 @@ export async function reviewRisk(project: Project, tasks: Task[]): Promise<Speci
 
   try {
     await Promise.race([
-      run(agent, "Review the current project for risk.", { maxTurns: MAX_TOOL_CALLS + 2 }),
+      runtime.runner.run(agent, "Review the current project for risk.", {
+        maxTurns: MAX_TOOL_CALLS + 2,
+      }),
       new Promise((_, reject) =>
         setTimeout(() => reject(new Error("specialist timed out")), TIME_BUDGET_MS),
       ),

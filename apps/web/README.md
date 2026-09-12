@@ -1,6 +1,6 @@
 # An agent inside your web app
 
-**OpenAI + CopilotKit React + Ambiguous AI**
+**Ollama + CopilotKit React + Ambiguous AI**
 
 Build an agent that sees the selected record or page, helps the user act on it, and creates a workplace record that remains after a refresh. Try a customer workspace, project review page, or personal planning app. Replace the sample incident domain with your own project.
 
@@ -19,20 +19,24 @@ npm ci
 cp .env.example .env
 ```
 
-Run the commands below from the repository root. Configure root `.env` with [OpenAI](../../using-sponsor-tools.md#openai) and [Ambiguous AI](../../using-sponsor-tools.md#ambiguous-ai):
+Install [Ollama](https://ollama.com/download), download the local model, and configure root `.env`. Neither NERV agent needs an API key:
+
+```bash
+ollama pull qwen3:4b
+```
 
 ```dotenv
-MODEL_PROVIDER=openai
-OPENAI_API_KEY=your-key
-MODEL=gpt-5.6-sol
+MODEL_PROVIDER=ollama
+MODEL=qwen3:4b
+OLLAMA_BASE_URL=http://127.0.0.1:11434/v1
 AMBIGUOUS_API_KEY=your-workspace-key
 ```
 
-Choose an OpenAI model your account can use. Use a demo workspace you control for the first write. This web template needs no managed Channel or Intelligence account.
+Keep Ollama running while using the app. `qwen3:8b` can improve responses on a machine with more memory. Use a demo workspace you control for the first external write. Ambiguous remains optional; without its key, the NERV agents still run locally.
 
 For CopilotKit onboarding, use the [official prompt](../../README.md#onboarding-prompt).
 
-To use OpenRouter, follow the [shared provider settings](../../using-sponsor-tools.md#openrouter): set `MODEL_PROVIDER=openrouter`, `OPENROUTER_API_KEY`, and a `MODEL` slug with tool support. Keep the Ambiguous workspace key; an OpenAI key is not required for OpenRouter chat.
+OpenAI and OpenRouter remain optional provider configurations. The default and documented NERV path is Ollama, so normal project chat and risk review do not consume paid model credits. Browser voice is separate and still requires OpenAI Realtime.
 
 ```bash
 npm run dev:web

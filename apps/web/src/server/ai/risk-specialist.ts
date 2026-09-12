@@ -1,8 +1,9 @@
-import { Agent, run, tool } from "@openai/agents";
+import { Agent, tool } from "@openai/agents";
 import { z } from "zod";
 import type { Snapshot, Store, Task } from "@/contracts/schemas";
 import { NERV_AGENTS } from "@/features/intelligence/agent-catalog";
 import { RiskFindingSchema, type RiskFinding } from "./risk-schema";
+import { configuredSpecialistRuntime } from "./specialist-runtime";
 
 const BUDGET_MS = 35_000;
 const MAX_TOOL_CALLS = 3;
@@ -122,22 +123,6 @@ export function heuristicFinding(store: Store, snapshot: Snapshot, now = Date.no
   };
 }
 
-function configuredOpenAIModel(): string | null {
-  const apiKey = process.env.OPENAI_API_KEY?.trim();
-  if (!apiKey || apiKey === "stub-replace-me") return null;
-
-  const selectedProvider = (
-    process.env.MODEL_PROVIDER ?? (process.env.OPENROUTER_API_KEY ? "openrouter" : "openai")
-  )
-    .trim()
-    .toLowerCase();
-  if (selectedProvider !== "openai") return null;
-
-  const configured = (process.env.MODEL || "gpt-4o-mini").trim();
-  if (/^(openrouter|anthropic|google)[/:]/i.test(configured)) return null;
-  return configured.replace(/^openai[/:]/i, "");
-}
-
 /**
  * Runs the model when one is configured, and otherwise falls back to the
  * rule-based reading. Either way the caller gets a validated finding and
@@ -148,8 +133,10 @@ export async function runRiskSpecialist(
   store: Store,
   snapshot: Snapshot,
 ): Promise<SpecialistOutcome> {
-  const model = configuredOpenAIModel();
-  if (model === null) return { source: "heuristic", finding: heuristicFinding(store, snapshot) };
+  const runtime = configuredSpecialistRuntime();
+  if (runtime === null) {
+    return { source: "heuristic", finding: heuristicFinding(store, snapshot) };
+  }
 
   let toolCalls = 0;
   let projectRead = false;
@@ -241,7 +228,7 @@ export async function runRiskSpecialist(
 
   const agent = new Agent({
     name: NERV_AGENTS.riskSpecialist.name,
-    model,
+    model: runtime.model,
     instructions: [
       "Review one NERV project for a concrete delivery risk.",
       "Call read_project once, then read_github once, then propose_mitigation exactly once and stop.",
@@ -259,7 +246,7 @@ export async function runRiskSpecialist(
   let timer: ReturnType<typeof setTimeout> | undefined;
   try {
     await Promise.race([
-      run(agent, "Inspect the current evidence and record one bounded risk finding.", {
+      runtime.runner.run(agent, "Inspect the current evidence and record one bounded risk finding.", {
         maxTurns: MAX_TOOL_CALLS + 2,
       }),
       new Promise<never>((_, reject) => {

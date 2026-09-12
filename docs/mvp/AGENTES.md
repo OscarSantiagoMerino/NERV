@@ -14,6 +14,7 @@ dependencias de servidor.
 - **Herramientas de interfaz:** `show_panel` y `select_task`.
 - **Límite:** explica y navega. No mueve tareas, no envía mensajes, no ejecuta revisiones y no
   publica cambios externos.
+- **Modelo predeterminado:** `qwen3:4b` mediante Ollama local; no requiere clave ni pago por API.
 
 ## Risk Specialist
 
@@ -23,6 +24,14 @@ dependencias de servidor.
   `propose_mitigation`.
 - **Salida:** `RiskFindingSchema`, validada antes de persistirla.
 - **Límite:** propone como máximo una mitigación. Nunca aprueba ni publica.
+- **Modelo predeterminado:** el mismo Ollama local; si no está disponible, usa la lectura
+  heurística explícitamente etiquetada en vez de inventar una respuesta.
+
+## Proveedor local
+
+Ambos agentes usan `MODEL_PROVIDER=ollama`, `MODEL=qwen3:4b` y
+`OLLAMA_BASE_URL=http://127.0.0.1:11434/v1`. OpenAI y OpenRouter son alternativas explícitas,
+no requisitos del recorrido NERV. La página opcional de voz usa OpenAI Realtime por separado.
 
 ## Lo que no es un agente
 

@@ -50,7 +50,7 @@ La interfaz usa inglés claro; el equipo puede presentar en español. Etiquetas 
 | Base | Reutilizar `apps/web` del Agents, Everywhere starter kit dentro de NERV; conservar versiones compatibles y lockfile | P2 incorpora; P1/P3 adaptan |
 | UI | React, Next.js, TypeScript y componentes existentes; sin diseñar un sistema visual nuevo | P1 |
 | CopilotKit | P1 cliente/contexto/`focus_task`; P3 runtime del kit. Reutilizar la versión instalada, sin mezclar APIs v1/v2 | P1 + P3 |
-| Especialista | OpenAI Agents SDK TypeScript; un agente, salida Zod validada; endpoint directo | P3 |
+| Especialista | Runtime TypeScript MIT conectado a Ollama local; un agente, salida Zod validada; endpoint directo | P3 |
 | Datos | SQLite con `better-sqlite3`, consultas preparadas y transacciones; un servidor Node local, sin Edge | P2 |
 | GitHub | REST desde servidor; repositorio fijo y token limitado a ese repositorio | P3 |
 | Desarrollo | Claude Code y/o Codex, ramas/worktrees propios, revisión humana y pruebas de los flujos críticos | Los tres |
@@ -59,9 +59,9 @@ Usar la integración ya funcional si existe; no reiniciar el proyecto ni borrar 
 
 SQLite es la base decidida si la plataforma aún no existe. P2 prueba instalación/arranque antes de T10 con el runtime compatible del kit. Si falla, arregla el entorno compatible y comunica el bloqueo; P1/P3 avanzan con el mismo fixture tipado. Memoria solamente para pruebas, nunca presentada como persistencia de la demo.
 
-**Recursos del paquete:** Starter Kit, OpenAI y CopilotKit participan en el núcleo. Auth0 queda para acceso real en una fase posterior; OpenRouter solo se conserva si ya está probado con los clientes utilizados, sin integrar un nuevo proveedor ahora. Exa, Ambiguous, Voice, Channels y Mozilla.ai quedan fuera de estos 110 minutos. El handbook entregado no exige usar todos los sponsors; no se promete una puntuación ni elegibilidad para premios específicos por omitirlos.
+**Recursos del paquete:** Starter Kit, Ollama y CopilotKit participan en el núcleo. El modelo predeterminado es `qwen3:4b` ejecutado localmente, sin consumo de una API paga. OpenAI y OpenRouter quedan como proveedores opcionales. Auth0 queda para acceso real en una fase posterior. Exa, Voice, Channels y Mozilla.ai quedan fuera de estos 110 minutos; las adendas finales describen el alcance vigente de Ambiguous. El handbook entregado no exige usar todos los sponsors; no se promete una puntuación ni elegibilidad para premios específicos por omitirlos.
 
-Referencias técnicas: [Starter web](https://github.com/CopilotKit/agents-everywhere-starter-kit/blob/main/apps/web/README.md), [Agents SDK TypeScript](https://openai.github.io/openai-agents-js/guides/quickstart/), [CopilotKit](https://docs.copilotkit.ai/quickstart), [SQLite para Node](https://github.com/WiseLibs/better-sqlite3), [GitHub Issues API](https://docs.github.com/en/rest/issues/issues). Consultar los ejemplos del commit elegido antes de copiar código de otra versión.
+Referencias técnicas: [Starter web](https://github.com/CopilotKit/agents-everywhere-starter-kit/blob/main/apps/web/README.md), [herramientas de Ollama](https://docs.ollama.com/capabilities/tool-calling), [CopilotKit](https://docs.copilotkit.ai/quickstart), [SQLite para Node](https://github.com/WiseLibs/better-sqlite3), [GitHub Issues API](https://docs.github.com/en/rest/issues/issues). Consultar los ejemplos del commit elegido antes de copiar código de otra versión.
 
 ## 4. Dos recorridos de interfaz, un motor
 
@@ -69,7 +69,7 @@ Referencias técnicas: [Starter web](https://github.com/CopilotKit/agents-everyw
 flowchart LR
   U[Operador y perfiles de demo] --> W[Sala: Charter, Kanban y chat]
   W --> D[API y SQLite local]
-  W -->|Review risks| A[Especialista Agents SDK]
+  W -->|Review risks| A[Especialista local con Ollama]
   A --> C[Charter y evidencia GitHub]
   A --> P[Propuesta guardada]
   P --> W
