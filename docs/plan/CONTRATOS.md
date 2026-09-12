@@ -1,5 +1,7 @@
 # Contratos de desarrollo de NERV
 
+> **Contrato histórico.** Para el MVP actual implementar únicamente [docs/mvp/CONTRATOS.md](../mvp/CONTRATOS.md), según el [alcance vigente](../mvp/README.md). Estas entidades, endpoints, Auth0/Postgres y permisos describen la versión ampliada y no son obligaciones adicionales.
+
 Acuerdo técnico para que los tres frentes trabajen en paralelo. P2 lo convierte en tipos, esquemas Zod, migraciones y un fixture compartido durante H0. Los ejemplos son especificaciones, no código ya implementado. Una decisión del equipo que cambie este acuerdo se registra aquí antes de modificar consumidores.
 
 La base es `apps/web` del Starter Kit oficial. Leer también [RECURSOS-Y-ARRANQUE.md](RECURSOS-Y-ARRANQUE.md). Todos los `src/` y `tests/` de este documento son relativos a `apps/web/`; `supabase/` y configuración del workspace son relativos a la raíz NERV. P2 verifica las rutas reales del commit elegido antes de asignar archivos heredados del kit.
