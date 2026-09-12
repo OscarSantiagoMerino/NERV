@@ -2,6 +2,20 @@
  * Thin GitHub REST wrapper — classic PAT (repo scope), no extra dependency.
  * Owner: P3 (docs/mvp/CONTRATOS.md §1, src/server/github/mvp/).
  */
+import {
+  ambiguousApiKey,
+  withAmbiguousClient,
+  pickReadTool,
+  pickCreateTool,
+  buildCreateArgs,
+  extractText,
+  extractRecordRef,
+  extractRecordList,
+  type AmbiguousTool,
+  type AmbiguousRecordSummary,
+} from "./ambiguousMcp";
+
+export type { AmbiguousRecordSummary } from "./ambiguousMcp";
 
 export interface RawGithubIssue {
   number: number;
@@ -112,52 +126,112 @@ export async function createIssue(
  * in parallel — a failure here must never compete with or block the write
  * that the acceptance criteria actually checks. Silent no-op (returns null)
  * if AMBIGUOUS_API_KEY isn't configured — that's a valid, non-error state.
+ *
+ * Untested against a live workspace (no AMBIGUOUS_API_KEY in this
+ * environment) — the tool-discovery heuristics in ambiguousMcp.ts may need
+ * adjusting once a real workspace's tool names/schemas are seen.
  */
 export async function createAmbiguousRecord(
-  _title: string,
-  _body: string,
+  title: string,
+  body: string,
 ): Promise<
   { result: { recordId: string; url: string } | null; error: { code: string; message: string } | null }
 > {
-  // TODO(P3): the real MCP call (https://app.ambiguous.ai/mcp, Bearer
-  // AMBIGUOUS_API_KEY) needs @modelcontextprotocol/sdk, which isn't in
-  // this repo's package.json — that file is P2's exclusive territory
-  // (CONTRATOS.md §1). Request the dependency from P2, or hand-roll the
-  // JSON-RPC calls without the SDK, before wiring this in for real.
-  // Safe no-op in the meantime: identical to "AMBIGUOUS_API_KEY unset",
-  // which the addendum defines as a valid, non-error state.
-  return { result: null, error: null };
-}
+  const apiKey = ambiguousApiKey();
+  if (!apiKey) return { result: null, error: null };
 
-export interface AmbiguousRecordSummary {
-  recordId: string;
-  title: string;
-  status: string;
-  url: string;
+  try {
+    return await withAmbiguousClient(apiKey, async (client) => {
+      const { tools } = await client.listTools();
+      const createTool = pickCreateTool(tools as AmbiguousTool[]);
+      if (!createTool) {
+        return {
+          result: null,
+          error: {
+            code: "ambiguous_no_create_tool",
+            message: "No create/task tool discovered in this Ambiguous workspace.",
+          },
+        };
+      }
+      const args = buildCreateArgs(createTool, title, body);
+      const response = await client.callTool({ name: createTool.name, arguments: args });
+      if (response.isError) {
+        return {
+          result: null,
+          error: { code: "ambiguous_create_failed", message: extractText(response) || "Ambiguous tool call failed." },
+        };
+      }
+      const parsed = extractRecordRef(response);
+      if (!parsed) {
+        return {
+          result: null,
+          error: {
+            code: "ambiguous_unrecognized_response",
+            message: `Tool "${createTool.name}" succeeded but no recordId/url could be parsed from its response.`,
+          },
+        };
+      }
+      return { result: parsed, error: null };
+    });
+  } catch (err) {
+    return {
+      result: null,
+      error: { code: "ambiguous_connection_failed", message: err instanceof Error ? err.message : String(err) },
+    };
+  }
 }
 
 /**
  * docs/mvp/CONTRATOS.md §11 (Ambiguous read addendum, proposed 2026-09-12,
  * pending team confirmation like §10 was before Oscar/Daniel signed off).
  *
- * Same blocker as createAmbiguousRecord above, plus one more: per
- * using-sponsor-tools.md, Ambiguous's MCP tool names/arguments are
- * discovered live from the connected workspace, not fixed — there is no
- * documented stable REST endpoint (e.g. no GET /tasks in the public
- * openapi.json) to fall back on the way the GitHub client does. A real
- * implementation must open the MCP connection, list tools, and select the
- * read/list tool by description at runtime — never hardcode a tool name.
- * Safe no-op until @modelcontextprotocol/sdk is approved by P2 and there's
- * a live AMBIGUOUS_API_KEY to verify tool discovery against.
+ * Untested against a live workspace (no AMBIGUOUS_API_KEY in this
+ * environment) — the tool-discovery heuristics in ambiguousMcp.ts may need
+ * adjusting once a real workspace's tool names/schemas are seen. Per
+ * using-sponsor-tools.md, Ambiguous's tool names/arguments are discovered
+ * live from the connected workspace, never hardcoded here.
  */
 export async function listAmbiguousRecords(): Promise<{
   records: AmbiguousRecordSummary[];
   complete: boolean;
   limitations: string[];
 }> {
-  return {
-    records: [],
-    complete: false,
-    limitations: ["AMBIGUOUS_API_KEY not wired: MCP read tool not yet implemented (needs @modelcontextprotocol/sdk)."],
-  };
+  const apiKey = ambiguousApiKey();
+  if (!apiKey) {
+    return { records: [], complete: false, limitations: ["AMBIGUOUS_API_KEY not configured."] };
+  }
+
+  try {
+    return await withAmbiguousClient(apiKey, async (client) => {
+      const { tools } = await client.listTools();
+      const readTool = pickReadTool(tools as AmbiguousTool[]);
+      if (!readTool) {
+        return {
+          records: [],
+          complete: false,
+          limitations: ["No no-argument read/list tool discovered in this Ambiguous workspace."],
+        };
+      }
+      const response = await client.callTool({ name: readTool.name, arguments: {} });
+      if (response.isError) {
+        return {
+          records: [],
+          complete: false,
+          limitations: [`Ambiguous read tool "${readTool.name}" failed: ${extractText(response)}`],
+        };
+      }
+      const records = extractRecordList(response);
+      return {
+        records,
+        complete: true,
+        limitations: records.length ? [] : [`Read tool "${readTool.name}" returned no parsable records.`],
+      };
+    });
+  } catch (err) {
+    return {
+      records: [],
+      complete: false,
+      limitations: [`Ambiguous connection failed: ${err instanceof Error ? err.message : String(err)}`],
+    };
+  }
 }
