@@ -34,7 +34,7 @@ still open, who owns it — pulled from actual history, not a generic summary.
 - No cross-time memory needed, but weaker live demo: "a summary" reads flatter than
   "it caught something a human missed."
 
-## Merged pick (currently recommended, see `../hackathon-plan.md`)
+## Merged pick (currently recommended — full build plan: [`plan-idea-1.md`](plan-idea-1.md))
 
 ### Buried Decision Catcher — #1 crossed with Ambiguous AI's strength
 Same trigger as #1 (unanswered decision-shaped question), but the catch doesn't stop

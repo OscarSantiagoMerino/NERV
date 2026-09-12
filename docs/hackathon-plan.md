@@ -1,13 +1,17 @@
-# Agents, Everywhere — Bogotá — Team Notes
+# Agents, Everywhere — Bogotá — Early Brainstorm (superseded)
 
-Event facts (schedule, theme, judging rubric, prizes, sponsor resources):
-[`context/hackathon.md`](context/hackathon.md).
+**Superseded by [`NERV_DEFINICION_Y_PLAN.md`](../NERV_DEFINICION_Y_PLAN.md).** The team
+has since frozen a different, fully-specified plan (NERV — a PMO agent embedded in
+GitHub, not Slack). Everything below and in `context/` was explored before that plan
+existed and does not reflect the decided direction. Kept for reference only — e.g. the
+Ambiguous AI CLI setup notes may still be useful if a "Best Use of Ambiguous Workspace"
+angle ever gets revisited, but Slack/Teams is explicitly out of scope in the frozen plan.
 
-Concepts considered so far, tradeoffs, and a recommendation (not a decision):
-[`context/ideas.md`](context/ideas.md).
+Event facts (schedule, theme, judging rubric, prizes, sponsor resources — still
+accurate, this part didn't change): [`context/hackathon.md`](context/hackathon.md).
 
-**No concept is locked yet.** This file tracks shared infra/status only — the team
-still needs to pick a direction together.
+Concepts explored before the team's plan was frozen: [`context/ideas.md`](context/ideas.md),
+[`context/plan-idea-1.md`](context/plan-idea-1.md).
 
 ## Current status
 
