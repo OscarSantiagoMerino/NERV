@@ -96,9 +96,11 @@
 
 **Texto en pantalla:** `Acción real | Resultado verificable`
 
-**Línea opcional, solo si aparece Ambiguous en el video:**
+**Línea sobre Ambiguous — incluir solo si la grabación realmente lo muestra en pantalla (verificado en vivo el 2026-09-12, no es una función incierta):**
 
-> Y la acción también puede registrarse en Ambiguous para mantener el seguimiento entre herramientas.
+> Y la misma acción queda registrada como tarea en Ambiguous — con su propio identificador, para mantener el seguimiento entre herramientas.
+
+**Nota de precisión:** a diferencia de GitHub, Ambiguous no devuelve un enlace navegable — solo un identificador y una clave de tarea (p. ej. `TASK-001`). No decir "enlace verificable" para Ambiguous; el panel de revisión ya muestra ese identificador/clave en su lugar.
 
 ### 1:48-1:58 | Cierre
 
