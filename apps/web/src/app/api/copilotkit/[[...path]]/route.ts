@@ -21,11 +21,18 @@ import {
   CopilotRuntime,
   createCopilotHonoHandler,
 } from "@copilotkit/runtime/v2";
-import { makeAgent } from "agent-core";
+import { makeAgent, NERV_PROJECT_ASSISTANT_PROMPT } from "agent-core";
+import { NERV_AGENTS } from "@/features/intelligence/agent-catalog";
 
 // Web writes use /api/followups after a browser approval. Never expose raw MCP writes here.
+const projectAssistant = NERV_AGENTS.projectAssistant;
 const runtime = new CopilotRuntime({
-  agents: () => ({ default: makeAgent(randomUUID(), { workplace: false }) }),
+  agents: () => ({
+    [projectAssistant.runtimeAgentId]: makeAgent(randomUUID(), {
+      workplace: false,
+      prompt: NERV_PROJECT_ASSISTANT_PROMPT,
+    }),
+  }),
 });
 
 const app = createCopilotHonoHandler({
