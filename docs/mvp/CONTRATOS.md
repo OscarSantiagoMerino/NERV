@@ -142,7 +142,7 @@ Una condición de aceptación funcional pesa más que crear pruebas que repitan 
 
 ## 10. Adenda Ambiguous AI
 
-**Añadido 2026-09-12 por alejandrobaracaldo. Pendiente de confirmación del equipo — ver [README.md §11](README.md#11-adenda-ambiguous-ai-en-alcance) para el porqué.**
+**Añadido 2026-09-12 por alejandrobaracaldo. Confirmado por Oscar y Daniel — ver [README.md §11](README.md#11-adenda-ambiguous-ai-en-alcance) para el porqué.**
 
 Extiende `Proposal` (§2) con un campo paralelo a `result`:
 

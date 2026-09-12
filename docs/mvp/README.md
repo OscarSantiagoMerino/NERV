@@ -166,7 +166,7 @@ Antes de comenzar, las personas asignan nombres a P1/P2/P3, confirman la máquin
 
 ## 11. Adenda: Ambiguous AI en alcance
 
-**Añadido 2026-09-12 por alejandrobaracaldo, con su agente. Pendiente de confirmación de Oscar y Daniel — no asumir aceptado hasta que respondan.** Esta sección amplía, no reemplaza, el §2/§3 anteriores; donde haya conflicto, esta adenda manda para Ambiguous específicamente.
+**Añadido 2026-09-12 por alejandrobaracaldo, con su agente. Confirmado por Oscar y Daniel — en alcance.** Esta sección amplía, no reemplaza, el §2/§3 anteriores; donde haya conflicto, esta adenda manda para Ambiguous específicamente.
 
 **Qué cambia:** al aprobar una propuesta y crear la issue real en GitHub (README §1 paso 7), el mismo ejecutor también crea un registro (tarea) equivalente en el workspace de Ambiguous del equipo, con el mismo título/cuerpo. La tarjeta de propuesta muestra ambos enlaces (GitHub e Ambiguous) tras `applied`. Rechazar sigue sin escribir en ninguno de los dos. Esto no cambia el recorrido de Kanban/Charter/chat/especialista; solo añade un segundo efecto al mismo paso de aprobación.
 
