@@ -4,8 +4,9 @@ import "@copilotkit/react-core/v2/styles.css";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Incident assistant — Agents, Everywhere",
-  description: "Pick an incident, ask your assistant, and add a follow-up.",
+  title: "NERV — project room",
+  description:
+    "Plan, talk, execute and steer one project in a shared room connected to real work.",
 };
 
 export default function RootLayout({

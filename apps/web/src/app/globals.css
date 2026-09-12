@@ -531,3 +531,302 @@ p {
   font-size: 13px;
   overflow-wrap: anywhere;
 }
+
+/* ── NERV project room ─────────────────────────────────────────────────── */
+
+.nerv-room {
+  max-width: 1440px;
+}
+.nerv-grid {
+  grid-template-columns: minmax(0, 1.9fr) minmax(0, 1fr);
+}
+@media (max-width: 1100px) {
+  .nerv-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.nerv-identity {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-end;
+  text-align: right;
+}
+.nerv-identity label {
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.nerv-identity p {
+  margin: 0;
+  font-size: 12px;
+  max-width: 22ch;
+}
+
+.nerv-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+.nerv-status {
+  margin-left: auto;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.nerv-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+}
+.nerv-section-header h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.nerv-columns {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  align-items: start;
+}
+@media (max-width: 760px) {
+  .nerv-columns {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.nerv-column h3 {
+  margin: 0 0 10px;
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.nerv-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--muted);
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 10px;
+}
+.nerv-card--selected {
+  border-left-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--border);
+}
+.nerv-card-title {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+  color: var(--text);
+}
+.nerv-card-title:hover {
+  text-decoration: underline;
+}
+
+.nerv-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 8px 0;
+}
+.nerv-badge {
+  font-size: 11px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 2px 8px;
+  color: var(--muted);
+}
+.nerv-badge--alert {
+  border-color: var(--accent);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.nerv-card-facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin: 8px 0 0;
+  font-size: 12px;
+}
+.nerv-card-facts dt {
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 10px;
+}
+.nerv-card-facts dd {
+  margin: 2px 0 0;
+}
+
+.nerv-card-detail {
+  border-top: 1px solid var(--border);
+  margin-top: 10px;
+  padding-top: 10px;
+  font-size: 13px;
+}
+.nerv-card-detail h4 {
+  margin: 10px 0 4px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+}
+.nerv-card-detail p {
+  margin: 0;
+}
+.nerv-card-detail label,
+.nerv-new-task label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 10px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+}
+
+.nerv-card-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.nerv-new-task {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px;
+}
+.nerv-form-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.nerv-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.nerv-metrics .ck-card strong {
+  display: block;
+  font-size: 26px;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  margin: 4px 0;
+}
+.nerv-metrics .ck-card p {
+  margin: 0;
+  font-size: 12px;
+}
+
+.nerv-objective,
+.nerv-charter,
+.nerv-raci {
+  margin-bottom: 24px;
+}
+.nerv-objective h3,
+.nerv-charter h3,
+.nerv-raci h3 {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  margin: 0 0 8px;
+}
+.nerv-charter-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin: 16px 0;
+}
+.nerv-charter-grid h4 {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+  margin: 0 0 6px;
+}
+.nerv-charter-grid ul {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 13px;
+}
+
+.nerv-raci table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.nerv-raci th,
+.nerv-raci td {
+  text-align: left;
+  padding: 8px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+.nerv-raci thead th {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+}
+
+.nerv-chat-log {
+  max-height: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.nerv-message header {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  font-size: 12px;
+}
+.nerv-message header time {
+  color: var(--muted);
+}
+.nerv-message p {
+  margin: 2px 0 0;
+  font-size: 14px;
+}
+.nerv-chat-form {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+  margin-top: 16px;
+  border-top: 1px solid var(--border);
+  padding-top: 16px;
+}
+.nerv-chat-form textarea {
+  flex: 1;
+  resize: vertical;
+  font: inherit;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
