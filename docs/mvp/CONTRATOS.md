@@ -139,3 +139,35 @@ P2 publica fixture tipado y sixTasksSeed antes de T10; P3 sustituye referencias 
 P2 prueba persistencia tras reinicio, versión concurrente y claim simultáneo. P3 prueba evidencia inválida, rechazo, creación confirmada y timeout sin segunda escritura usando proveedor simulado, más un recorrido live aprobado por humano. P1 prueba botones, refresco, dos perfiles y estados de propuesta. P2 ejecuta los scripts heredados del kit y los checks del proyecto; P1/P3 entregan resultados de sus módulos.
 
 Una condición de aceptación funcional pesa más que crear pruebas que repitan la implementación. No reiniciar ni borrar automáticamente la base de demo o las issues para repetir un ensayo.
+
+## 10. Adenda Ambiguous AI
+
+**Añadido 2026-09-12 por alejandrobaracaldo. Pendiente de confirmación del equipo — ver [README.md §11](README.md#11-adenda-ambiguous-ai-en-alcance) para el porqué.**
+
+Extiende `Proposal` (§2) con un campo paralelo a `result`:
+
+```ts
+type Proposal = {
+  // ...campos existentes sin cambio...
+  result: { number: number; url: string } | null;      // GitHub, ya existente
+  ambiguous: { recordId: string; url: string } | null;  // nuevo
+  error: { code: string; message: string } | null;
+};
+```
+
+`ambiguous` sigue el mismo ciclo de vida que `result`: `null` hasta que la ejecución lo resuelve; nunca se fabrica un id/URL. Un fallo de Ambiguous no cambia `Proposal.status` ni revierte la issue de GitHub ya creada — GitHub es la acción que decide `applied/failed/uncertain`; Ambiguous es un efecto adicional del mismo paso, registrado aparte. Si Ambiguous fallara pero GitHub tuviera éxito, `ambiguous` queda `null` y el error se anota en un campo separado (`ambiguousError`) que no participa en la validación de aceptación de §8.
+
+**Ejecución (P3, mismo paso que §5 punto 3):** tras crear la issue de GitHub con éxito, llamar al MCP de Ambiguous (`https://app.ambiguous.ai/mcp`, Bearer `AMBIGUOUS_API_KEY`) con el mismo `payload.title`/`payload.body` de la propuesta aprobada. Guardar `recordId`/`url` reales devueltos; nunca inventarlos. Esta llamada no bloquea ni retrasa la creación de la issue de GitHub — se hace después, no en paralelo, para que un fallo de Ambiguous nunca compita con la escritura que sí cuenta para el criterio de aceptación.
+
+**Persistencia (P2):** `finishProposal` (§4 exports) acepta un outcome extendido:
+
+```ts
+type ProposalOutcome =
+  | { status: 'applied'; result: {number,url}; newTask: Task;
+      ambiguous?: {recordId,url} | null; ambiguousError?: {code,message} | null }
+  | { status: 'failed' | 'uncertain'; error: {code,message} };
+```
+
+**Config:** nueva variable `AMBIGUOUS_API_KEY` en `.env.example`, junto a `GITHUB_TOKEN`. Ausente ⇒ el paso de Ambiguous se omite silenciosamente (no es un error de la propuesta); la tarjeta simplemente no muestra un enlace de Ambiguous.
+
+**Propiedad:** P3 implementa la llamada MCP (mismo archivo que el adaptador de GitHub); P2 solo amplía el esquema/tabla `proposals` para persistir los campos nuevos. Ningún archivo cambia de dueño.
