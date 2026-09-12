@@ -18,9 +18,9 @@ export function WorkspaceControl({ workspace }: { workspace: WorkspaceControls }
       projectVersion: project.version,
       view,
       viewer: {
-        displayName: workspace.actor.displayName,
-        accessRole: workspace.actor.accessRole,
-        timeZone: workspace.actor.timeZone,
+        displayName: workspace.viewer.displayName,
+        accessRole: workspace.viewer.accessRole,
+        timeZone: workspace.viewer.timeZone,
       },
       objective: project.objective.statement,
       milestones: project.milestones.map((milestone) => ({

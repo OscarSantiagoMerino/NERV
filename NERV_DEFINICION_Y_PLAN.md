@@ -1,5 +1,7 @@
 # NERV — PMO Agéntica embebida en GitHub
 
+> **Plan histórico, sustituido para el MVP actual.** Ejecutar [MVP de 110 minutos](docs/mvp/README.md), [contratos vigentes](docs/mvp/CONTRATOS.md) y sus prompts. No iniciar FastAPI/EVM ni aplicar el reparto de este documento al alcance reducido.
+
 **Hackathon "Agents, Everywhere" · Equipo de 3 personas · Ventana de construcción: 5–6 horas**
 **Repo:** `https://github.com/OscarSantiagoMerino/NERV` (owner: `OscarSantiagoMerino`)
 

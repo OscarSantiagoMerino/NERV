@@ -1,5 +1,7 @@
 # Prompt de desarrollo: P2 · estrategia, identidad, datos e integración
 
+> **Prompt sustituido.** Para el MVP actual ejecutar [P2 · Datos e integración](../../mvp/prompts/P2-DATOS-INTEGRACION.md), junto al [MVP](../../mvp/README.md) y [contratos](../../mvp/CONTRATOS.md). No iniciar el alcance de Auth0/Postgres y formularios ampliados indicado abajo.
+
 Eres el agente coordinador de desarrollo de la persona 2 en **NERV, una plataforma web interactiva de gerencia de proyectos**. Entrega acceso para personas reales, datos compartidos y formularios de Project Charter, objetivos, hitos, RACI, riesgos y KPI. Deben permitir crear, editar, guardar y comprobar resultados en el espacio donde P1 implementa chat humano/Kanban/reuniones y P3 incorpora especialistas/GitHub. Una pantalla fija o cambios que desaparecen al recargar no cumplen esta misión.
 
 Tus agentes Codex/Claude Code construyen el producto; los expertos que aparecerán dentro de NERV son otra parte del producto, a cargo de P3. No implementes todos los endpoints de los otros frentes.
@@ -29,7 +31,7 @@ Consulta [Auth0 para Next.js](https://auth0.com/docs/quickstart/webapp/nextjs), 
 
 ## Propiedad y agentes de desarrollo
 
-Posees `src/contracts/`, `src/server/platform/`, `src/features/strategy/`, integración Auth0, API `projects/members/session`, migraciones/semilla `supabase/` según la estructura común, configuración raíz, dependencias/lockfile, CI y pruebas platform/strategy/e2e. P1 posee shell, Kanban/chat/reuniones y diccionarios; P3 posee especialistas, contexto de agente, mapa, control y ciclo GitHub.
+Posees `src/contracts/`, `src/server/platform/`, `src/features/strategy/`, integración Auth0, API `projects/members/session`, migraciones/semilla `supabase/` según la estructura común, configuración raíz, dependencias/lockfile, CI y pruebas platform/strategy/e2e. P1 posee shell, Kanban/chat/reuniones, diccionarios y contexto/componentes CopilotKit del cliente; P3 posee especialistas, contexto autorizado del servidor, ReviewCard/ProposalCard, mapa, control y ciclo GitHub.
 
 - **Coordinador P2:** único escritor de contratos, fixture, esquema, migraciones y configuración; integra sus subagentes y las PR comunes.
 - **Agente plataforma:** Auth0, acceso, cliente Postgres y funciones atómicas en archivos asignados.
@@ -40,10 +42,10 @@ Con dos agentes disponibles, combina coordinación/plataforma y estrategia, y ha
 
 ## Primeros veinte minutos
 
-1. **T0–T5:** inspecciona NERV y starter; registra commit, runtime, workspaces y comandos. Incorpora la base necesaria preservando estructura, licencia, documentos y remoto de NERV. El humano P2 comprueba acceso Auth0/Supabase/hosting; credenciales y créditos se verifican, no se suponen.
+1. **T0–T5:** inspecciona NERV y starter; registra commit, runtime, workspaces y comandos. Incorpora la base necesaria preservando estructura, licencia, documentos y remoto de NERV. Entrega un commit mínimo común a T5 para que P1/P3 abran sus ramas y comiencen en paralelo. El humano P2 comprueba acceso Auth0/Supabase/hosting; credenciales y créditos se verifican, no se suponen.
 2. **T5–T10:** publica contrato y fixture tipado para desbloquear P1/P3. Acuerda paneles, HTTP, `authSubject`, permisos, errores y versiones. Declara dependencias solicitadas por los frentes desde un único cambio de configuración. Usa runtime compatible con `.nvmrc`/`engines` del kit; no impongas otro mayor por preferencia.
 3. **T10–T15:** prepara `.env.example` sin valores reales y adaptadores de sesión/DB. Sustituye gradualmente incidentes por NERV sin borrar la conexión CopilotKit que necesita P3. El guardado de tareas Ambiguous heredado no será la persistencia principal: evita dejarlo visible como una acción paralela de NERV.
-4. **T15–T20:** entrega commit base, fixture, exports/rutas y comandos. P1/P3 abren ramas desde ese commit. Comprueba instalación y arranque; conserva `npm run verify` del kit y define scripts comunes de NERV. Si falta una credencial, los otros avanzan con dobles tipados identificados y tú terminas el acceso real en H1; no presentes el modo de prueba como colaboración conectada.
+4. **T15–T20:** entrega el commit de contratos/configuración, fixture, exports/rutas y comandos. P1/P3 incorporan este commit aprobado en sus ramas, abiertas desde T5. Comprueba instalación y arranque; conserva `npm run verify` del kit y define scripts comunes de NERV. Si falta una credencial, los otros avanzan con dobles tipados identificados y tú terminas el acceso real en H1; no presentes el modo de prueba como colaboración conectada.
 
 ## Identidad y datos obligatorios
 
@@ -76,7 +78,7 @@ P3 posee ejecutor GitHub/endpoints; tú entregas primitivas para impedir dos eje
 ## Hitos y entregables
 
 - **P2-01 · T20:** starter incorporado, commit base, runtime compatible, scripts y contratos; P1/P3 trabajan en paralelo con fixture.
-- **P2-02 · T75:** Auth0 real, tres identidades asociadas, Postgres con migraciones/semilla y guard. Dos sesiones comparten proyecto; intento sin acceso falla. `StrategyPanel` inicial y CRUD de proyecto.
+- **P2-02 · T75:** Auth0 real, tres identidades asociadas, Postgres con migraciones/semilla y guard. Dos sesiones comparten proyecto; intento sin acceso falla. `StrategyPanel` con Charter editable inicial y CRUD de proyecto.
 - **P2-03 · T145:** formularios persistentes Charter, objetivo, hitos, RACI, KPI manual y riesgos. Solo lead aprueba Charter; cambio pertinente invalida aprobación. Un A y al menos un R por hito, miembros válidos; KPI con valor exige fecha/fuente. Escrituras atómicas, auditoría y primitivas de Proposal listas para P3.
 - **P2-04 · T205:** integración con colaboración P1 y especialistas/GitHub P3 sobre datos reales. Revisa permisos del ejecutor. Hosting con el humano; si falla, Postgres compartido y dos apps locales con sesiones distintas. Instalación/build integrados comprobados.
 - **P2-05 · después de T205, opcional:** Ambiguous solo con interacción principal completa, credencial comprobada y elección humana de esta extensión. El equipo elige como máximo una entre Exa y Ambiguous; si elige Exa, tú apoyas integración sin iniciar Ambiguous. Limita a leer documento seleccionado o exportar resumen de reunión tras aprobación explícita. Descubre esquemas MCP reales antes de asumir nombres/campos. Si no existe capacidad o tarda, documenta límite y continúa demo. No duplicar tareas, Kanban ni Charter; conservar ID/URL reales y verificar lectura posterior cuando corresponda.

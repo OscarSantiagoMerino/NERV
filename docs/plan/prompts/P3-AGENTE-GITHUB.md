@@ -1,5 +1,7 @@
 # Prompt de ejecución: P3 · especialistas, control y GitHub
 
+> **Prompt sustituido.** Para el MVP actual ejecutar [P3 · Especialista y GitHub](../../mvp/prompts/P3-AGENTE-GITHUB.md), junto al [MVP](../../mvp/README.md) y [contratos](../../mvp/CONTRATOS.md). P1 posee ahora todas las tarjetas visuales; no ejecutar los tres especialistas ni el mapa descritos abajo.
+
 Eres el agente coordinador de P3 en NERV. Tu misión es entregar tres especialistas bajo demanda dentro de una **plataforma web interactiva**, un mapa conceptual navegable y seguimiento con evidencia real de GitHub, incluyendo **solicitud desde la interfaz → revisión con evidencia → propuesta editable → aprobación humana → issue real asignada → resultado persistido y visible en el Kanban**. El entorno de colaboración y estrategia proviene de P1/P2; no lo reconstruyas.
 
 ## Contexto y límites
@@ -67,6 +69,6 @@ Necesitas de P2 contratos, auth/acceso, tablas y función atómica; de P1 shell 
 
 **OpenRouter es una alternativa elegida por configuración**, no un segundo motor obligatorio. Centraliza en `src/server/ai/` las factorías para los dos clientes: el proveedor del runtime CopilotKit y el proveedor/modelo de `@openai/agents`. Cambiar una URL o clave en el primero no configura el segundo. Antes de activarlo, prueba en ambos una llamada con herramienta, respuesta estructurada compatible, errores y límites usando el modelo concreto disponible con sus créditos. No confundas el SDK de cliente OpenAI con Agents SDK, ni sustituyas este último por `@openrouter/agent` sin acuerdo de arquitectura. Si esa combinación no pasa, mantén OpenAI directo o documenta el componente que sí quedó en OpenRouter; no declares compatibilidad universal.
 
-P2 es dueño de las variables y archivos de entorno compartidos; solicita `OPENAI_API_KEY` y selección de modelo servidor, y solo si se activa la extensión `EXA_API_KEY` o `OPENROUTER_API_KEY`. Los valores los configura el humano en su entorno/hosting. El recurso de voz se comparte con P1 después del MVP; Channels y el workspace externo de Ambiguous AI no son dependencias de este motor.
+P2 es dueño de las variables y archivos de entorno compartidos; solicita `OPENAI_API_KEY` y selección de modelo servidor, y solo si se activa la extensión `EXA_API_KEY` o `OPENROUTER_API_KEY`. Los valores los configura el humano en su entorno/hosting. El recurso de voz se comparte con P1 en una fase posterior al hackathon; Channels y el workspace externo de Ambiguous AI no son dependencias de este motor.
 
 El humano P3 obtiene permisos, valida pertinencia de propuestas, controla gasto y verifica resultados externos. El lead humano aprueba el contenido de cada escritura de demo. Tus entregas por hito incluyen PR/commit, pruebas, traza resumida de herramientas sin secretos, enlaces de evidencia cuando estén autorizados y limitaciones. No afirmar que funciona por haber recibido JSON: comprobar el ciclo de principio a fin.

@@ -1,5 +1,7 @@
 # Trazabilidad del marco teórico al producto
 
+> **Referencias teóricas conservadas; alcance histórico.** Las etiquetas “MVP” de este documento corresponden al plan amplio. La implementación actual y lo aplazado se definen en [MVP de 110 minutos](../mvp/README.md); sus requisitos prevalecen.
+
 NERV reúne planeación estratégica, colaboración del equipo y seguimiento con evidencia de GitHub Issues y pull requests. Tres perfiles expertos comparten un motor de IA: interpretan información y proponen acciones que una persona aprueba antes de ejecutarlas.
 
 ## Fuentes y criterio de lectura

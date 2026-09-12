@@ -2,7 +2,10 @@
 
 import { useState } from "react";
 import type { WorkspaceControls } from "./use-workspace";
-import { WORKFLOW_STATES, type Task, type WorkflowState } from "./types";
+import { WORKFLOW_STATES } from "./constants";
+import type { Task } from "@/contracts/schemas";
+
+type WorkflowState = Task["workflowState"];
 
 const COLUMN_LABEL: Record<WorkflowState, string> = {
   todo: "To do",
@@ -61,7 +64,7 @@ function TaskCard({
         </div>
         <div>
           <dt>Due</dt>
-          <dd>{formatDue(task.dueAt, workspace.actor.timeZone)}</dd>
+          <dd>{formatDue(task.dueAt, workspace.viewer.timeZone)}</dd>
         </div>
       </dl>
 

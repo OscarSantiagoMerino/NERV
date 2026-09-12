@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { WorkspaceControls } from "./use-workspace";
-import { MESSAGE_MAX_LENGTH } from "./types";
+import { MESSAGE_MAX_LENGTH } from "./constants";
 
 export function TeamChat({ workspace }: { workspace: WorkspaceControls }) {
   const [draft, setDraft] = useState("");
@@ -14,14 +14,14 @@ export function TeamChat({ workspace }: { workspace: WorkspaceControls }) {
 
   const time = new Intl.DateTimeFormat("en", {
     timeStyle: "short",
-    timeZone: workspace.actor.timeZone,
+    timeZone: workspace.viewer.timeZone,
   });
 
   return (
     <section className="ck-panel nerv-chat" aria-labelledby="team-chat-title">
       <header className="nerv-section-header">
         <h2 id="team-chat-title">Team chat</h2>
-        <span className="ck-tag">{workspace.actor.timeZone}</span>
+        <span className="ck-tag">{workspace.viewer.timeZone}</span>
       </header>
 
       <div className="ck-scroll nerv-chat-log">
@@ -60,7 +60,7 @@ export function TeamChat({ workspace }: { workspace: WorkspaceControls }) {
           onChange={(event) => setDraft(event.target.value)}
           maxLength={MESSAGE_MAX_LENGTH}
           rows={2}
-          placeholder={`Message the team as ${workspace.actor.displayName}…`}
+          placeholder={`Message the team as ${workspace.viewer.displayName}…`}
         />
         <button
           type="submit"

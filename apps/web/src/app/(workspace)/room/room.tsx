@@ -6,7 +6,7 @@ import { Overview } from "@/features/workspace/overview";
 import { TeamChat } from "@/features/workspace/team-chat";
 import { WorkspaceControl } from "@/features/workspace/workspace-control";
 import { useWorkspace, type WorkspaceView } from "@/features/workspace/use-workspace";
-import type { WorkspaceSnapshot } from "@/features/workspace/types";
+import type { Member, Store } from "@/contracts/schemas";
 
 const NAV: { view: WorkspaceView; label: string }[] = [
   { view: "overview", label: "Charter & plan" },
@@ -14,8 +14,8 @@ const NAV: { view: WorkspaceView; label: string }[] = [
   { view: "team", label: "Team chat" },
 ];
 
-export function Room({ snapshot }: { snapshot: WorkspaceSnapshot }) {
-  const workspace = useWorkspace(snapshot);
+export function Room({ store, viewer }: { store: Store; viewer: Member }) {
+  const workspace = useWorkspace(store, viewer);
 
   return (
     <>
@@ -32,8 +32,9 @@ export function Room({ snapshot }: { snapshot: WorkspaceSnapshot }) {
             <label htmlFor="actor-select">Acting as</label>
             <select
               id="actor-select"
-              value={workspace.actor.id}
-              onChange={(event) => workspace.setActorId(event.target.value)}
+              value={workspace.viewer.id}
+              disabled={workspace.saving}
+              onChange={(event) => void workspace.switchViewer(event.target.value)}
             >
               {workspace.members.map((member) => (
                 <option key={member.id} value={member.id}>
@@ -41,7 +42,7 @@ export function Room({ snapshot }: { snapshot: WorkspaceSnapshot }) {
                 </option>
               ))}
             </select>
-            <p className="ck-muted">Development identity; Auth0 login pending from P2.</p>
+            <p className="ck-muted">Local demo · sample profiles, not authenticated users.</p>
           </div>
         </header>
 

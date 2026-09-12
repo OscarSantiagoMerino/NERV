@@ -1,7 +1,7 @@
 "use client";
 
 import type { WorkspaceControls } from "./use-workspace";
-import type { Task } from "./types";
+import type { Task } from "@/contracts/schemas";
 
 export function deliveryProgress(tasks: Task[]): number | null {
   const planned = tasks.filter((task) => task.milestoneId !== null);
@@ -29,7 +29,7 @@ function List({ title, items }: { title: string; items: string[] }) {
 
 export function Overview({ workspace }: { workspace: WorkspaceControls }) {
   const { project, tasks } = workspace;
-  const { charter, objective, kpi } = project;
+  const { charter, objective } = project;
   const progress = deliveryProgress(tasks);
   const overdue = tasks.filter(
     (task) =>
@@ -61,15 +61,6 @@ export function Overview({ workspace }: { workspace: WorkspaceControls }) {
           <p className="ck-eyebrow">Blocked</p>
           <strong>{blocked}</strong>
           <p className="ck-muted">Flagged by the team</p>
-        </div>
-        <div className="ck-card">
-          <p className="ck-eyebrow">{kpi.name}</p>
-          <strong>
-            {kpi.current === null ? "No data" : `${kpi.current} / ${kpi.target}`}
-          </strong>
-          <p className="ck-muted">
-            {kpi.source === null ? "No measurement recorded" : kpi.source}
-          </p>
         </div>
       </div>
 
