@@ -37,7 +37,9 @@ Crear una issue no significa que el riesgo esté resuelto ni que se haya logrado
 | Resultado | URL real, estado de ejecución y tarjeta nueva en el mismo tablero | No se confunde éxito con un timeout o una respuesta simulada |
 | CopilotKit | Contexto de la sala y herramienta UI para enfocar una tarea | La interacción abre la tarjeta referenciada usando IDs reales |
 
-Se aplazan: edición/aprobación del Charter, editor RACI, reuniones, mapas, autenticación multiusuario, despliegue público, multiproyecto, asignación automática GitHub, sincronización bidireccional, drag-and-drop, varios especialistas, voz, Slack/Teams, traducciones, KPI históricos, EVM/SPI/CPI, Exa y Ambiguous.
+Se aplazan: edición/aprobación del Charter, editor RACI, reuniones, mapas, autenticación multiusuario, despliegue público, multiproyecto, asignación automática GitHub, sincronización bidireccional, drag-and-drop, varios especialistas, voz, Slack/Teams, traducciones, KPI históricos, EVM/SPI/CPI y Exa.
+
+> **Adenda 2026-09-12 (alejandrobaracaldo): Ambiguous AI vuelve a estar en alcance.** Ver [§11](#11-adenda-ambiguous-ai-en-alcance) al final de este documento antes de tratar "Se aplazan" como excluyente para Ambiguous. Esto cambia lo que P3 ejecuta al aprobar una propuesta; avisar al equipo antes de continuar con el ejecutor de GitHub.
 
 La interfaz usa inglés claro; el equipo puede presentar en español. Etiquetas como Project goal, Owner, Evidence y Approve resultan comprensibles internacionalmente. No se construye infraestructura i18n en esta ventana.
 
@@ -161,3 +163,39 @@ Reporta commit, qué funciona, prueba realizada, bloqueo y próxima integración
 ```
 
 Antes de comenzar, las personas asignan nombres a P1/P2/P3, confirman la máquina de demo, el plazo real, el repositorio permitido y las credenciales. Los agentes escriben y verifican; las personas aceptan alcance, acceso, gasto, acciones externas y entrega.
+
+## 11. Adenda: Ambiguous AI en alcance
+
+**Añadido 2026-09-12 por alejandrobaracaldo, con su agente. Confirmado por Oscar y Daniel — en alcance.** Esta sección amplía, no reemplaza, el §2/§3 anteriores; donde haya conflicto, esta adenda manda para Ambiguous específicamente.
+
+**Qué cambia:** al aprobar una propuesta y crear la issue real en GitHub (README §1 paso 7), el mismo ejecutor también crea un registro (tarea) equivalente en el workspace de Ambiguous del equipo, con el mismo título/cuerpo. La tarjeta de propuesta muestra ambos enlaces (GitHub e Ambiguous) tras `applied`. Rechazar sigue sin escribir en ninguno de los dos. Esto no cambia el recorrido de Kanban/Charter/chat/especialista; solo añade un segundo efecto al mismo paso de aprobación.
+
+**Por qué:** el `NVIDIA DGX Spark` de "Best Use of Ambiguous Workspace" es el premio individual más alto del evento; la integración verificada (CLI, ~4 segundos, sin navegador — ver `using-sponsor-tools.md#ambiguous-ai` del starter kit) es de bajo riesgo para el tiempo restante.
+
+**Contrato (detalle completo en [CONTRATOS.md §10](CONTRATOS.md#10-adenda-ambiguous-ai))**
+
+- Nuevo campo en `Proposal`: `ambiguous: {recordId: string; url: string} | null`, paralelo a `result`.
+- Nueva variable de entorno: `AMBIGUOUS_API_KEY`.
+- Dueño de la ejecución: **P3** (mismo paso que crea la issue de GitHub — es otro escritor externo bajo la misma aprobación humana). P2 solo extiende el esquema/persistencia para guardar el campo nuevo.
+- Si la llamada a Ambiguous falla pero GitHub tuvo éxito, el resultado sigue siendo `applied` (GitHub es la acción que cuenta para el criterio de aceptación); el fallo de Ambiguous se guarda aparte y se muestra, sin bloquear ni revertir la issue ya creada.
+
+**Si el equipo decide NO adoptar esto:** revertir el campo `ambiguous` es no ejecutar ese paso opcional; no afecta el resto del contrato. Avisar en el commit correspondiente.
+
+## 12. Adenda: lectura de Ambiguous como evidencia del especialista
+
+**Añadido 2026-09-12 por alejandrobaracaldo, con su agente. Pendiente de confirmación de Oscar y Daniel — no asumir aceptado hasta que respondan.** Amplía la §11/§10 anterior (que solo cubría escritura); no la reemplaza.
+
+**Qué cambia:** el especialista de riesgos (README §1 paso 5) puede llamar a una herramienta `read_ambiguous`, además de `read_project`/`read_github`, para citar registros existentes del workspace de Ambiguous como evidencia adicional al diagnosticar un bloqueo. No persiste nada nuevo: es una lectura en el momento de la revisión, igual que `read_github` lee del estado ya sincronizado. No cambia Kanban/Charter/chat ni el contrato de `Snapshot`/`Proposal`.
+
+**Por qué:** el equipo ya tiene un flujo de escritura hacia Ambiguous (§11); leer de ahí también aprovecha esa misma integración para enriquecer el diagnóstico, no solo para reportar la acción aprobada.
+
+**Bloqueo actual (mismo que §11 ya tenía para escritura):** `using-sponsor-tools.md` del starter kit confirma que los nombres/argumentos de herramientas de Ambiguous se descubren en vivo desde el workspace conectado — no hay un endpoint REST estable documentado (el `openapi.json` público no incluye tareas/registros). Implementarlo de verdad requiere `@modelcontextprotocol/sdk` (no está en `package.json`; P2 debe aprobarlo) y una `AMBIGUOUS_API_KEY` real para verificar el descubrimiento de herramientas. Mientras tanto, `read_ambiguous` es una herramienta real conectada al especialista, respaldada por un stub honesto (`listAmbiguousRecords`) que devuelve una lista vacía con la limitación explicada — nunca datos inventados.
+
+**Contrato (detalle en [CONTRATOS.md §11](CONTRATOS.md#11-adenda-lectura-de-ambiguous))**
+
+- Nueva herramienta del especialista: `read_ambiguous`, sin persistencia, opcional en la secuencia de revisión.
+- Ningún campo nuevo en `Proposal`/`Snapshot`/`Task`; esta adenda no toca `docs/mvp/CONTRATOS.md §2`.
+- Dueño de la implementación: **P3** (mismo archivo que el especialista y el cliente de Ambiguous/GitHub).
+- Un resultado vacío o limitado de `read_ambiguous` no es en sí mismo un hallazgo de riesgo; el especialista no debe inventar un bloqueo por falta de datos de Ambiguous.
+
+**Si el equipo decide NO adoptar esto:** quitar `read_ambiguous` de la lista de herramientas del especialista es no ejecutar este paso opcional; no afecta `read_project`/`read_github`/`propose_mitigation` ni el resto del contrato. Avisar en el commit correspondiente.
