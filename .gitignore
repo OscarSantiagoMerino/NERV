@@ -7,3 +7,4 @@ apps/web/data/*.sqlite
 apps/web/data/*.sqlite-wal
 apps/web/data/*.sqlite-shm
 *.log
+*.tsbuildinfo
